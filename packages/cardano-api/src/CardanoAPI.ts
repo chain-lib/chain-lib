@@ -2,7 +2,7 @@ import { Commands } from './Commands';
 import { SelectCoin } from './SelectCoin';
 import { Blockfrost } from './Blockfrost';
 import { Spend } from './Send';
-export {CardanoAPI}
+export {CardanoAPI};
 
 type CardanoAPIOption = (f: CardanoAPI) => void;
 

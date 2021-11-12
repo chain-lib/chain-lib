@@ -11,7 +11,7 @@ npm i crypto-component-library
 ## Usage
 
 ```html
-<script type="module">
+<script type='module'>
   import 'crypto-component-library/crypto-component-library.js';
 </script>
 

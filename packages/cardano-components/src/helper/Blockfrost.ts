@@ -14,7 +14,7 @@ export default class Blockfrost {
     blockfrostRequest = async(endpoint : string, method? : string, ipfs? : boolean) : Promise<any> => {
 
         if(!method){
-            method = "get";
+            method = 'get';
         }
         const networkEndpoint = ipfs ? 'https://ipfs.blockfrost.io/api/v0' :
         await this.Cardano.getNetworkId() == 0 ? 'https://Cardano-testnet.blockfrost.io/api/v0' : 'https://Cardano-mainnet.blockfrost.io/api/v0';

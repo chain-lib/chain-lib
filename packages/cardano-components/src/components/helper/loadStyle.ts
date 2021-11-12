@@ -12,7 +12,7 @@ export const loadStyle = (src : string) => {
 }
 
 export const loadDefaultStylesheets = () => {
-    loadStyle("https://fonts.googleapis.com/css?family=Roboto:300,400,500")
-    .then(()=>loadStyle("https://fonts.googleapis.com/css?family=Material+Icons&display=block"))
+    loadStyle('https://fonts.googleapis.com/css?family=Roboto:300,400,500')
+    .then(()=>loadStyle('https://fonts.googleapis.com/css?family=Material+Icons&display=block'))
     .catch(err => alert(err));
 }

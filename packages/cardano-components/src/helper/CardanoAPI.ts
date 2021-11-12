@@ -1,7 +1,7 @@
-import Commands from "./Commands";
-import SelectCoin from "./SelectCoin";
-import Blockfrost from "./Blockfrost";
-import Send from "./Send";
+import Commands from './Commands';
+import SelectCoin from './SelectCoin';
+import Blockfrost from './Blockfrost';
+import Send from './Send';
 
 type CardanoAPIOption = (f: CardanoAPI) => void;
 
@@ -33,10 +33,10 @@ export default class CardanoAPI{
     }
 
     public static AddressReturnType = {
-      hex : "hex",
-      bech32 : "bech32",
-      hexString : "hexString",
-      bech32String : "bech32String"
+      hex : 'hex',
+      bech32 : 'bech32',
+      hexString : 'hexString',
+      bech32String : 'bech32String'
     }
 
     constructor(...options: Array<CardanoAPIOption>) {
@@ -71,8 +71,8 @@ export default class CardanoAPI{
       }
 
       public static async CardanoSerializationLibrary(serialization : any) : Promise<CardanoAPIOption> {
-        const Buffer = (await import("Buffer")).Buffer;
-        const Axios = (await import("Axios")).default;
+        const Buffer = (await import('Buffer')).Buffer;
+        const Axios = (await import('Axios')).default;
         return (f: CardanoAPI): void => {
           f.Buffer = Buffer;
           f.Axios = Axios;

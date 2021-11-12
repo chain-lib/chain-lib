@@ -1,4 +1,4 @@
-import CardanoAPI from "./CardanoAPI";
+import CardanoAPI from './CardanoAPI';
 
 const Command = new CardanoAPI(
     CardanoAPI.WalletId(CardanoAPI.Wallet.nami),

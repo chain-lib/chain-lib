@@ -34,14 +34,6 @@
         "@typescript-eslint/no-unused-vars": "error",
         "eol-last" : ["error","always"],
         "import/extentions": "off",
-        "import/no-extranous-dependencies" : [
-            "error",
-            {
-                "devDependencies": false,
-                "optionalDependencies": false,
-                "peerDependencies": false
-            }            
-        ],
         "lit/no-useless-template-literals": "off",
         "max-len": [
             "error",
@@ -51,7 +43,6 @@
         ],
         "no-return-assign": "off",
         "quotes" : ["error", "single"],
-        "semi" : ["error", "always"],
-        "wc/guard-super-call": "off"
+        "semi" : ["error", "always"]
     }
 }

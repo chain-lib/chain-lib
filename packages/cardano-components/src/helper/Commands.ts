@@ -1,5 +1,5 @@
-import type {Value, TransactionUnspentOutput, BaseAddress, RewardAddress, Transaction, TransactionWitnessSet } from "@emurgo/Cardano-serialization-lib-browser";
-import CardanoAPI from "./CardanoAPI";
+import type {Value, TransactionUnspentOutput, BaseAddress, RewardAddress, Transaction, TransactionWitnessSet } from '@emurgo/Cardano-serialization-lib-browser';
+import CardanoAPI from './CardanoAPI';
 
 declare let window : any;
 

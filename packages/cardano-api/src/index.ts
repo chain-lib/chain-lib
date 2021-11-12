@@ -1,2 +1,1 @@
-export { CardanoAPI } from './CardanoAPI'
- 
+export { CardanoAPI } from './CardanoAPI';

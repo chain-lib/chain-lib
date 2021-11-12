@@ -1,5 +1,5 @@
-import { combineReducers } from "redux";
-import { CARDANO_WALLET } from ".";
+import { combineReducers } from 'redux';
+import { CARDANO_WALLET } from '.';
 
 const INITIAL_STATE = {
     walletActive : undefined,

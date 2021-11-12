@@ -1,5 +1,5 @@
-import { MultiAsset, TransactionOutputs, TransactionUnspentOutput } from "@emurgo/cardano-serialization-lib-browser";
-import CardanoAPI from "./CardanoAPI";
+import { MultiAsset, TransactionOutputs, TransactionUnspentOutput } from '@emurgo/cardano-serialization-lib-browser';
+import CardanoAPI from './CardanoAPI';
 
 type Delegate = {
     stakepoolId: string,
@@ -247,7 +247,7 @@ export default class Spend{
                 const asset =
                     this.buffer.from(
                         policy.to_bytes()
-                    ).toString('hex') + "." +
+                    ).toString('hex') + '.' +
                     this.buffer.from(
                         policyAsset.name()
                     ).toString('ascii')
@@ -436,7 +436,7 @@ export default class Spend{
         )
 
         const size = transaction.to_bytes().length * 2;
-        if (size > ProtocolParameter.maxTxSize) throw "The transaction is to large";
+        if (size > ProtocolParameter.maxTxSize) throw 'The transaction is to large';
 
         return transaction.to_bytes()
     }
@@ -450,8 +450,8 @@ export default class Spend{
                 AssetsMap[policy] = []
             }
             AssetsMap[policy].push({
-                "unit": this.buffer.from(assetName, 'ascii').toString('hex'), 
-                "quantity": quantity
+                'unit': this.buffer.from(assetName, 'ascii').toString('hex'), 
+                'quantity': quantity
             })
             
         }
@@ -489,7 +489,7 @@ export default class Spend{
             this.wasm.TransactionWitnessSet.from_bytes(
                 this.buffer.from(
                     witneses,
-                    "hex"
+                    'hex'
                 )
             ),
             transaction.auxiliary_data()
@@ -505,10 +505,10 @@ export default class Spend{
     }
     getProtocolParameter = async() => {
 
-        const latestBlock = await this.Blockfrost.blockfrostRequest("/blocks/latest");
-        if(!latestBlock) throw "invalid protocal parameters";
+        const latestBlock = await this.Blockfrost.blockfrostRequest('/blocks/latest');
+        if(!latestBlock) throw 'invalid protocal parameters';
         const p = await this.Blockfrost.blockfrostRequest(`/epochs/${latestBlock.data.epoch}/parameters`) //
-        if(!p) throw "invalid protocal parameters";
+        if(!p) throw 'invalid protocal parameters';
 
         const parameters = {
             linearFee: {

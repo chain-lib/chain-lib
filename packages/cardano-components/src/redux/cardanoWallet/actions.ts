@@ -1,6 +1,6 @@
 // eslint-disable-next-line import/extensions
-import {CARDANO_WALLET} from ".";
-import { CardanoAPIRef, CardanoCommand as CardanoAPI } from "../../helper";
+import {CARDANO_WALLET} from '.';
+import { CardanoAPIRef, CardanoCommand as CardanoAPI } from '../../helper';
 
 
 export const connectWallet = () => async(dispatch : any) => {
@@ -32,7 +32,7 @@ export const stake = (stakepoolId : string) => async(dispatch : any) => {
 
 export const send = (recipients : object, metadata? : String, metadataLabel? : String) => async(dispatch : any) => {
     //const send = await CardanoAPI.Send.sendMultiple({recipients : recipients, metadata : metadata, metadataLabel : metadataLabel});
-    const send = await CardanoAPI.Send.send({address : "addr_test1qp6hvfnyh98tfkvkwt05makkrq8pgk44yyyendvnx97qmkj88xalyhy8ftlmgvvceyv3geglxp5vgwnlq76p9k4v9lfq4eat67", amount: 50});
+    const send = await CardanoAPI.Send.send({address : 'addr_test1qp6hvfnyh98tfkvkwt05makkrq8pgk44yyyendvnx97qmkj88xalyhy8ftlmgvvceyv3geglxp5vgwnlq76p9k4v9lfq4eat67', amount: 50});
     dispatch({type : CARDANO_WALLET.SEND, payload : {send : send}})
 }
 

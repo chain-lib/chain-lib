@@ -1,4 +1,4 @@
-import { TransactionOutputs, TransactionUnspentOutput, Value } from "@emurgo/cardano-serialization-lib-browser"
+import { TransactionOutputs, TransactionUnspentOutput, Value } from '@emurgo/cardano-serialization-lib-browser'
 
 type AmountList = Value[];
 type UTxOList = TransactionUnspentOutput[];
@@ -109,14 +109,14 @@ export default class SelectCoin{
         }
       
         if (limit <= 0) {
-          throw new Error("INPUT_LIMIT_EXCEEDED");
+          throw new Error('INPUT_LIMIT_EXCEEDED');
         }
       
         if (nbFreeUTxO <= 0) {
           if (this.isQtyFulfilled(outputAmount, utxoSelection.amount, 0, 0)) {
-            throw new Error("MIN_UTXO_ERROR");
+            throw new Error('MIN_UTXO_ERROR');
           }
-          throw new Error("INPUTS_EXHAUSTED");
+          throw new Error('INPUTS_EXHAUSTED');
         }
       
         const utxo : TransactionUnspentOutput | undefined = utxoSelection.subset
@@ -137,9 +137,9 @@ export default class SelectCoin{
         return this.randomSelect(utxoSelection, outputAmount, limit - 1, minUTxOValue);
       }
     
-      sortAmountList = (amountList : AmountList, sortOrder : string = "ASC") : AmountList => {
+      sortAmountList = (amountList : AmountList, sortOrder : string = 'ASC') : AmountList => {
         return amountList.sort((a, b) => {
-          const sortInt = sortOrder === "DESC" ? BigInt(-1) : BigInt(1);
+          const sortInt = sortOrder === 'DESC' ? BigInt(-1) : BigInt(1);
           return Number((this.getAmountValue(a) - this.getAmountValue(b)) * sortInt);
         });
       }
@@ -152,14 +152,14 @@ export default class SelectCoin{
     
       do{
           if (limit <= 0) {
-            throw new Error("INPUT_LIMIT_EXCEEDED");
+            throw new Error('INPUT_LIMIT_EXCEEDED');
           }
       
           if (utxoSelection.subset.length <= 0) {
             if (this.isQtyFulfilled(outputAmount, utxoSelection.amount, 0, 0)) {
-              throw new Error("MIN_UTXO_ERROR");
+              throw new Error('MIN_UTXO_ERROR');
             }
-            throw new Error("INPUTS_EXHAUSTED");
+            throw new Error('INPUTS_EXHAUSTED');
           }
       
           const utxo : TransactionUnspentOutput = utxoSelection.subset.splice(0, 1).pop() as TransactionUnspentOutput;
@@ -219,15 +219,15 @@ export default class SelectCoin{
           .pop();
     
         if(!utxo){
-          throw new Error("UTXO_UNDEFINED");
+          throw new Error('UTXO_UNDEFINED');
         }
         
-        const newAmount = this.Wasm.Value.new(this.Wasm.BigNum.from_str("0"))
+        const newAmount = this.Wasm.Value.new(this.Wasm.BigNum.from_str('0'))
           .checked_add(utxo ? utxo.output().amount() : new Value())
           .checked_add(outputAmount);
       
         if(!newAmount){
-          throw new Error("NEW_AMOUNT_UNDEFINED");
+          throw new Error('NEW_AMOUNT_UNDEFINED');
         }
         const newAmountCompare = newAmount.compare(range.maximum);
         if (
@@ -252,7 +252,7 @@ export default class SelectCoin{
       }
       
       mergeOutputsAmounts = (outputs : TransactionOutputs ) : Value => {
-        let compiledAmountList = this.Wasm.Value.new(this.Wasm.BigNum.from_str("0"));
+        let compiledAmountList = this.Wasm.Value.new(this.Wasm.BigNum.from_str('0'));
       
         for (let i = 0; i < outputs.len(); i+=1) {
           compiledAmountList = this.addAmounts(
@@ -269,18 +269,18 @@ export default class SelectCoin{
         // todo : redue this its 2*O(n)
         if (amounts.multiasset()) {
           const mA = amounts.multiasset();
-          if(!mA) throw new Error("MA_UNDEFINED");
+          if(!mA) throw new Error('MA_UNDEFINED');
           if(mA !== undefined){
             for (let i = 0; i < mA.keys().len(); i+=1) {
               const scriptHash = mA.keys().get(i);
               const maGetScriptHash = mA.get(scriptHash);
-              if(!mA) throw new Error("MA_GET_SCRIPT_HASH_UNDEFINED");
+              if(!mA) throw new Error('MA_GET_SCRIPT_HASH_UNDEFINED');
               if(maGetScriptHash !== undefined){
                 for (let j = 0; j < maGetScriptHash.keys().len(); j+=1) {
                   const _assets = this.Wasm.Assets.new();
                   const assetName = maGetScriptHash.keys().get(j);
                   const maGetScriptHashGetAssetName = maGetScriptHash.get(assetName);
-                  if(!mA) throw new Error("MA_GET_SCRIPT_HASH_GET_ASSET_NAME_UNDEFINED");
+                  if(!mA) throw new Error('MA_GET_SCRIPT_HASH_GET_ASSET_NAME_UNDEFINED');
                   if(maGetScriptHashGetAssetName !== undefined){
                     _assets.insert(
                       this.Wasm.AssetName.from_bytes(assetName.to_bytes()),
@@ -295,7 +295,7 @@ export default class SelectCoin{
                     this.Wasm.ScriptHash.from_bytes(scriptHash.to_bytes()),
                     _assets
                   );
-                  const _value = this.Wasm.Value.new(this.Wasm.BigNum.from_str("0"));
+                  const _value = this.Wasm.Value.new(this.Wasm.BigNum.from_str('0'));
                   _value.set_multiasset(_multiasset);
           
                   splitAmount.push(_value);
@@ -306,7 +306,7 @@ export default class SelectCoin{
         }
       
         // Order assets by qty DESC
-        splitAmount = this.sortAmountList(splitAmount, "DESC");
+        splitAmount = this.sortAmountList(splitAmount, 'DESC');
       
         // Insure lovelace is last to account for min ada requirement
         splitAmount.push(
@@ -369,7 +369,7 @@ export default class SelectCoin{
     randomImprove = (inputs : UTxOList, outputs : TransactionOutputs, limit : number) : SelectionResult => {
       if (!this.ProtocolParameters){
         throw new Error(
-          "Protocol parameters not set. Use setProtocolParameters()."
+          'Protocol parameters not set. Use setProtocolParameters().'
         );
       }
   
@@ -379,12 +379,12 @@ export default class SelectCoin{
         selection: [],
         remaining: [...inputs], // Shallow copy
         subset: [],
-        amount: this.Wasm.Value.new(this.Wasm.BigNum.from_str("0")),
+        amount: this.Wasm.Value.new(this.Wasm.BigNum.from_str('0')),
       };
   
       const mergedOutputsAmounts = this.mergeOutputsAmounts(outputs);
   
-      // Explode amount in an array of unique asset amount for comparison"s sake
+      // Explode amount in an array of unique asset amount for comparison's sake
       let splitOutputsAmounts = this.splitAmounts(mergedOutputsAmounts);
   
       // Phase 1: RandomSelect
@@ -400,7 +400,7 @@ export default class SelectCoin{
             _minUTxOValue
           );
         } catch (e : any) {
-          if (e.message === "INPUT_LIMIT_EXCEEDED") {
+          if (e.message === 'INPUT_LIMIT_EXCEEDED') {
             // Limit reached : Fallback on DescOrdAlgo
             utxoSelection = this.descSelect(
               utxoSelection,
@@ -420,8 +420,8 @@ export default class SelectCoin{
       splitOutputsAmounts.forEach((output) => {
         this.createSubSet(utxoSelection, output); // Narrow down for NatToken UTxO
         
-        const ideal : Value = this.Wasm.Value.new(this.Wasm.BigNum.from_str("0")).checked_add(output).checked_add(output);
-        const maximum : Value = this.Wasm.Value.new(this.Wasm.BigNum.from_str("0")).checked_add(ideal).checked_add(output);
+        const ideal : Value = this.Wasm.Value.new(this.Wasm.BigNum.from_str('0')).checked_add(output).checked_add(output);
+        const maximum : Value = this.Wasm.Value.new(this.Wasm.BigNum.from_str('0')).checked_add(ideal).checked_add(output);
         const range : ImproveRange = {ideal, maximum};
 
         this.improve(
