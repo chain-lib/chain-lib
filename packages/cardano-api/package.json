@@ -1,0 +1,13 @@
+{
+  "name": "@chain-lib/cardano-api",
+  "description": "Commands for interacting with cardano wallets",
+  "license": "MIT",
+  "author": "chain-lib",
+  "version": "0.0.0",
+  "devDependencies": {
+    "@emurgo/cardano-serialization-lib-asmjs":"^9.1.1",
+    "buffer":"^6.0.3",
+    "axios":"^0.24.0"
+  }
+
+}
