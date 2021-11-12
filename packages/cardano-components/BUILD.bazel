@@ -1,0 +1,52 @@
+load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
+load("@dependencies//@bazel/typescript:index.bzl", "ts_project")
+load("@dependencies//webpack-cli:index.bzl", webpack = "webpack_cli")
+
+nodejs_binary(
+    name = "bin",
+    entry_point = ":src/index.ts",
+    link_workspace_root = True,
+    templated_args = ["--bazel_patch_module_resolver"],
+)
+
+ts_project(
+    name = "build",
+    srcs = glob(["src/**/*.ts"]),
+    composite = True,
+    declaration = True,
+    extends = ":tsconfig.json",
+    incremental = True,
+    deps = [
+        "@dependencies//pwa-helpers",
+        "@dependencies//@material/mwc-button",
+        "@dependencies//lit",
+        "@dependencies//lit-element",
+        "@dependencies//redux",
+        "@dependencies//redux-thunk",
+        "@dependencies//@lit-labs/react",
+        "@dependencies//react",
+        "@dependencies//@types/react",
+        "@dependencies//@emurgo/cardano-serialization-lib-browser",
+        "@dependencies//buffer",
+        "@dependencies//axios",
+        "@dependencies//tslib"
+    ],
+)
+
+webpack(
+    name = "bundle",
+    outs = ["app.bundle.js"],
+    args = [
+        "$(execpath src/index.js)",
+        "--config",
+        "$(execpath webpack.config.js)",
+        "-o",
+        "$@",
+    ],
+    data = [
+        "src/index.js",
+        "webpack.config.js",
+        ":build",
+        "@dependencies//:node_modules",
+    ],
+)

@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "target": "es2018",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "noEmitOnError": true,
+    "lib": ["es2020", "dom"],
+    "strict": true,
+    "esModuleInterop": false,
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "outDir": "dist",
+    "sourceMap": false,
+    "inlineSources": false,
+    "composite": true,
+    "rootDirs": [
+      ".",
+      "../../bazel-out/host/bin/path/to",
+      "../../bazel-out/darwin-fastbuild/bin/path/to",
+      "../../bazel-out/k8-fastbuild/bin/path/to",
+      "../../bazel-out/x64_windows-fastbuild/bin/path/to",
+      "../../bazel-out/darwin-dbg/bin/path/to",
+      "../../bazel-out/k8-dbg/bin/path/to",
+      "../../bazel-out/x64_windows-dbg/bin/path/to",
+    ],
+    "declaration": true,
+    "incremental": true
+  },
+  "include": ["./**/*.ts"],
+}

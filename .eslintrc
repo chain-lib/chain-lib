@@ -1,0 +1,57 @@
+{
+    "parser": "@typescript-eslint/parser",
+    "extends" : [
+        "eslint-config-prettier"
+    ],
+    "plugins": [
+        "@typescript-eslint"
+    ],
+    "overrides": [
+        {
+            "files" : [
+                "**/*.test.ts"
+            ],
+            "env" : {
+                "jest" : true
+            }
+
+        }
+    ],
+    "rules": {
+        "@typescript-eslint/member-delimiter-style": [
+            "error",
+            {
+                "multiline" : {
+                    "delimiter": "semi",
+                    "requireLast": true
+                },
+                "singleline": {
+                    "delimiter" : "semi",
+                    "requireLast" : false
+                }
+            }
+        ],
+        "@typescript-eslint/no-unused-vars": "error",
+        "eol-last" : ["error","always"],
+        "import/extentions": "off",
+        "import/no-extranous-dependencies" : [
+            "error",
+            {
+                "devDependencies": false,
+                "optionalDependencies": false,
+                "peerDependencies": false
+            }            
+        ],
+        "lit/no-useless-template-literals": "off",
+        "max-len": [
+            "error",
+            {
+                "code" : 120
+            }
+        ],
+        "no-return-assign": "off",
+        "quotes" : ["error", "single"],
+        "semi" : ["error", "always"],
+        "wc/guard-super-call": "off"
+    }
+}

@@ -1,0 +1,89 @@
+{
+  "name": "chainlib",
+  "version": "0.1.0",
+  "private": true,
+  "devDependencies": {
+    "@bazel/bazelisk": "latest",
+    "@bazel/buildifier": "latest",
+    "@bazel/ibazel": "latest",
+    "@bazel/typescript": "^4.4.2",
+    "@commitlint/cli": "^13.2.1",
+    "@commitlint/config-conventional": "^13.2.0",
+    "@emurgo/cardano-serialization-lib-asmjs": "^9.1.1",
+    "@emurgo/cardano-serialization-lib-browser": "^9.1.1",
+    "@material/mwc-button": "^0.25.3",
+    "@open-wc/eslint-config": "^7.0.0",
+    "@types/react": "^17.0.34",
+    "@typescript-eslint/eslint-plugin": "^5.3.1",
+    "@typescript-eslint/parser": "^5.3.1",
+    "@yarnpkg/doctor": "^3.1.0",
+    "axios": "^0.24.0",
+    "buffer": "^6.0.3",
+    "cspell": "^5.12.3",
+    "cz-conventional-changelog": "^3.3.0",
+    "depcheck": "^1.4.2",
+    "esbuild-loader": "^2.16.0",
+    "eslint-config-prettier": "^8.3.0",
+    "husky": "^7.0.4",
+    "jest": "^27.3.1",
+    "lint-staged": "^11.2.6",
+    "lit": "^2.0.2",
+    "prettier": "^2.4.1",
+    "process": "^0.11.10",
+    "pwa-helpers": "^0.9.1",
+    "test262-harness": "^9.0.0",
+    "tslib": "^2.3.1",
+    "webpack": "^5.63.0"
+  },
+  "scripts": {
+    "build": "bazel build //...",
+    "test": "bazel test //...",
+    "lint": "yarn run bazel:format && yarn run bazel:lint && yarn doctor && yarn depcheck",
+    "bazel:format": "find . -type f \\( -name \"*.bzl\" -or -name WORKSPACE -or -name BUILD -or -name BUILD.bazel \\) ! -path \"*/node_modules/*\" | xargs buildifier -v --warnings=attr-cfg,attr-license,attr-non-empty,attr-output-default,attr-single-file,constant-glob,ctx-actions,ctx-args,depset-iteration,depset-union,dict-concatenation,duplicated-name,filetype,git-repository,http-archive,integer-division,load,load-on-top,native-build,native-package,out-of-order-load,output-group,package-name,package-on-top,positional-args,redefined-variable,repository-name,same-origin-load,string-iteration,unsorted-dict-items,unused-variable",
+    "bazel:lint": "yarn bazel:format --lint=warn",
+    "bazel:lint-fix": "yarn bazel:format --lint=fix",
+    "cz": "git-cz",
+    "check-format": "prettier --list-different \"./**/*.{ts,js,json,md}\"",
+    "check-spelling": "cspell --config=.cspell.json \"**/*.{md,ts,js}\"",
+    "pre-commit": "yarn lint-staged",
+    "pre-push": "yarn check-format && yarn check-spelling"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ],
+    "rules": {
+      "body-max-length": [
+        0
+      ],
+      "body-max-line-length": [
+        0
+      ],
+      "footer-max-length": [
+        0
+      ],
+      "footer-max-line-length": [
+        0
+      ],
+      "header-max-length": [
+        0
+      ]
+    }
+  },
+  "dependencies": {
+    "@lit-labs/react": "^1.0.1",
+    "http-server": "^14.0.0",
+    "lit-element": "^3.0.1",
+    "react": "^17.0.2",
+    "redux": "^4.1.2",
+    "redux-thunk": "^2.4.0",
+    "time-fix-plugin": "^2.0.7",
+    "typescript": "^4.3.5",
+    "webpack-cli": "^4.9.1"
+  }
+}
