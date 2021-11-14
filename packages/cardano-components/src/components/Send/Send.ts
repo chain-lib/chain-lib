@@ -33,7 +33,7 @@ export class Send extends connect(Store)(Button) {
   }
 
   stateChanged(state : any) {
-    if(this.loading){
+    if(this.loading && state){
       this.loading = false;
     }
   }

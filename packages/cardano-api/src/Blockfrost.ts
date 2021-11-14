@@ -19,12 +19,16 @@ export class Blockfrost {
         await this.Cardano.getNetworkId() == 0 ? 'https://Cardano-testnet.blockfrost.io/api/v0' : 
         'https://Cardano-mainnet.blockfrost.io/api/v0';
 
+        const apiKey = ipfs ? this.BlockfrostApiKey.ipfs :
+        await this.Cardano.getNetworkId() == 0 ? this.BlockfrostApiKey.testnet : 
+              this.BlockfrostApiKey.mainnet;
+
         const address = `${networkEndpoint}${endpoint}`;
        
         const options = {
             url: address,
             method: method,
-            headers: {'Content-Type': 'application/json', 'project_id': this.BlockfrostApiKey},
+            headers: {'Content-Type': 'application/json', 'project_id': apiKey},
             validateStatus : false
         };
 

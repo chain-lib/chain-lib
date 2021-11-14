@@ -1,41 +1,40 @@
 {
-  'name': '@chain-lib/cardano-components',
-  'description': 'Webcomponent crypto-component-library',
-  'license': 'MIT',
-  'author': 'chain-lib',
-  'version': '0.0.0',
-  'keywords': [
-    'cardano', 'chain-lib', 'chainlib'
+  "name": "@chain-lib/cardano-components",
+  "description": "Webcomponent crypto-component-library",
+  "license": "MIT",
+  "author": "chain-lib",
+  "version": "0.0.0",
+  "keywords": [
+    "cardano", "chain-lib", "chainlib"
   ],
-  'main': 'dist/index.js',
-  'module': 'dist/index.js',
-  'exports': {
-    '.': './dist/index.js',
-    './react': './dist/react/insdex.js',
-    './redux': './dist/redux/index.js'
+  "main": "dist/main.js",
+  "module": "dist/main.js",
+  "exports": {
+    ".": "./dist/main.js"
   },
-  'homepage': 'https://github.com/chain-lib/chain-lib/tree/main/packages/cardano-components',
-  'bugs': {
-    'url' : 'https://github.com/chain-lib/chain-lib/issues'
+  "homepage": "https://github.com/chain-lib/chain-lib/tree/main/packages/cardano-components",
+  "bugs": {
+    "url" : "https://github.com/chain-lib/chain-lib/issues"
   },
-  'repository': {
-    'type': 'git',
-    'url': 'https://github.com/chain-lib/chain-lib.git',
-    'directory': 'packages/cardano-components'
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chain-lib/chain-lib.git",
+    "directory": "packages/cardano-components"
   },
-  'devDependencies': {
-    'pwa-helpers': '^0.9.1',
-    '@material/mwc-button': '^0.25.1',
-    'lit': '^2.0.2',
-    'redux': '^4.1.2',
-    'redux-thunk': '^2.4.0',
-    '@lit-labs/react': '^1.0.1',
-    'react': '^17.0.2',
-    '@types/react': '^17.0.2',
-    '@emurgo/cardano-serialization-lib-browser':'^9.1.1',
-    'buffer':'^6.0.3',
-    'axios':'^0.24.0',
-    'tslib': '^2.3.1'
+  "devDependencies": {
+    "pwa-helpers": "^0.9.1",
+    "@material/mwc-button": "^0.25.1",
+    "lit": "^2.0.2",
+    "redux": "^4.1.2",
+    "redux-thunk": "^2.4.0",
+    "@lit-labs/react": "^1.0.1",
+    "react": "^17.0.2",
+    "@types/react": "^17.0.2",
+    "@emurgo/cardano-serialization-lib-browser":"^9.1.1",
+    "buffer":"^6.0.3",
+    "axios":"^0.24.0",
+    "tslib": "^2.3.1",
+    "@chain-lib/cardano-api": "0.0.0"
   },
-  'customElements': 'custom-elements.json'
+  "sideEffects": "false"
 }

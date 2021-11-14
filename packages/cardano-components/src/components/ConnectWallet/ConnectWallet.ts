@@ -1,4 +1,3 @@
-/* eslint-disable import/extensions */
 import { connect } from 'pwa-helpers';
 import {customElement, property} from 'lit/decorators.js';
 import {Button} from '@material/mwc-button';

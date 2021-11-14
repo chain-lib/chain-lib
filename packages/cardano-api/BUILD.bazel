@@ -1,42 +1,67 @@
-load('@build_bazel_rules_nodejs//:index.bzl', 'nodejs_binary')
-load('@dependencies//@bazel/typescript:index.bzl', 'ts_project')
-load('@dependencies//webpack-cli:index.bzl', webpack = 'webpack_cli')
+load("@build_bazel_rules_nodejs//:index.bzl", "pkg_npm", "js_library")
+load("@dependencies//@bazel/typescript:index.bzl", "ts_config", "ts_project")
+load("@dependencies//webpack-cli:index.bzl", webpack = "webpack_cli")
 
-nodejs_binary(
-    name = 'bin',
-    entry_point = ':src/index.ts',
-    link_workspace_root = True,
-    templated_args = ['--bazel_patch_module_resolver'],
+package(default_visibility = ["//visibility:public"])
+
+ts_config(
+    name = "tsconfig_lib",
+    src = "tsconfig.json",
+    deps = ["//:tsconfig"],
 )
 
 ts_project(
-    name = 'build',
-    srcs = glob(['src/**/*.ts']),
+    name = "build",
+    srcs = glob(["src/**/*.ts"]),
     composite = True,
     declaration = True,
-    extends = ':tsconfig.json',
     incremental = True,
+    resolve_json_module = True,
+    extends = "tsconfig_lib",
     deps = [
-        '@dependencies//buffer',
-        '@dependencies//axios',
-        '@dependencies//@emurgo/cardano-serialization-lib-asmjs',
+        "@dependencies//@emurgo/cardano-serialization-lib-asmjs",
+        "@dependencies//axios",
+        "@dependencies//buffer",
     ],
 )
 
+js_library(
+    name = "js_library",
+    package_name = "@chain-lib/cardano-api",
+    srcs = ["package.json"],
+    deps = [":build","tsconfig_lib"],
+)
+
 webpack(
-    name = 'bundle',
-    outs = ['app.bundle.js'],
+    name = "dist",
     args = [
-        '$(execpath src/index.js)',
-        '--config',
-        '$(execpath webpack.config.js)',
-        '-o',
-        '$@',
+        "$(execpath src/index.js)",
+        "--config",
+        "$(execpath webpack.config.js)",
+        "-o",
+        "$(@D)",
     ],
     data = [
-        'src/index.js',
-        'webpack.config.js',
-        ':build',
-        '@dependencies//:node_modules',
+        "src/index.js",
+        "webpack.config.js",
+        ":build",
+        "@dependencies//:node_modules",
     ],
+    output_dir = True,
 )
+
+js_library(
+    name = "packed_js_library",
+    package_name = "@chain-lib/cardano-api",
+    srcs = ["package.json"],
+    deps = [":dist"],
+)
+
+pkg_npm(
+    name = "package",
+    package_name = "@chain-lib/cardano-api",
+    srcs = ["package.json"],
+    deps = [":dist"],
+    validate=True,
+)
+

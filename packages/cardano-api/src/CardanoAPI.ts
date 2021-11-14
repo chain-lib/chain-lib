@@ -25,7 +25,7 @@ class CardanoAPI{
 
     private Axios : any;
 
-    private BlockfrostId : any;
+    private BlockfrostAPIKey : any;
 
     private static Instance : any;
 
@@ -52,10 +52,9 @@ class CardanoAPI{
         }
 
         this.Commands = new Commands(this.Cardano,this.Buffer,this.Wasm);
-        this.Blockfrost = new Blockfrost(this.Axios,this.Cardano,this.BlockfrostId);
+        this.Blockfrost = new Blockfrost(this.Axios,this.Cardano,this.BlockfrostAPIKey);
         this.SelectCoin = new SelectCoin(this.Wasm);
         this.Send = new Spend(this.Commands, this.Blockfrost, this.Wasm, this.Buffer, this.SelectCoin );
-        // help this is not loading correctly, commadns
       }
 
       public static WalletId(walletId : any) : CardanoAPIOption {
@@ -65,9 +64,9 @@ class CardanoAPI{
         };
       }
 
-      public static BlockfrostId(BlockfrostId : string) : CardanoAPIOption {
+      public static BlockfrostAPIKey(BlockfrostAPIKey : string) : CardanoAPIOption {
         return (f: CardanoAPI): void => {
-          f.BlockfrostId = BlockfrostId;
+          f.BlockfrostAPIKey = BlockfrostAPIKey;
         };
       }
 

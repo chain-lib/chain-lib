@@ -7,10 +7,10 @@
   "keywords": [
     "cardano", "chain-lib", "chainlib"
   ],
-  "main": "dist/index.js",
-  "module": "dist/index.js",
+  "main": "dist/main.js",
+  "module": "dist/main.js",
   "exports": {
-    ".": "./dist/index.js"
+    ".": "./dist/main.js"
   },
   "homepage": "https://github.com/chain-lib/chain-lib/tree/main/packages/cardano-api",
   "bugs": {
@@ -25,6 +25,6 @@
     "@emurgo/cardano-serialization-lib-asmjs":"^9.1.1",
     "buffer":"^6.0.3",
     "axios":"^0.24.0"
-  }
-
+  },
+  "sideEffects": "false"
 }
