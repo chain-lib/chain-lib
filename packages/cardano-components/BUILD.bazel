@@ -1,12 +1,13 @@
-load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
-load("@dependencies//@bazel/typescript:index.bzl", "ts_project")
+load("@build_bazel_rules_nodejs//:index.bzl", "pkg_npm")
+load("@dependencies//@bazel/typescript:index.bzl", "ts_config", "ts_project")
 load("@dependencies//webpack-cli:index.bzl", webpack = "webpack_cli")
 
-nodejs_binary(
-    name = "bin",
-    entry_point = ":src/index.ts",
-    link_workspace_root = True,
-    templated_args = ["--bazel_patch_module_resolver"],
+package(default_visibility = ["//visibility:public"])
+
+ts_config(
+    name = "tsconfig_lib",
+    src = "tsconfig.json",
+    deps = ["//:tsconfig", "//packages/cardano-api:tsconfig_lib"],
 )
 
 ts_project(
@@ -14,39 +15,55 @@ ts_project(
     srcs = glob(["src/**/*.ts"]),
     composite = True,
     declaration = True,
-    extends = ":tsconfig.json",
     incremental = True,
+    resolve_json_module = True,
+    tsconfig = "tsconfig_lib",
     deps = [
-        "@dependencies//pwa-helpers",
+        "@dependencies//@emurgo/cardano-serialization-lib-browser",
+        "@dependencies//@lit-labs/react",
         "@dependencies//@material/mwc-button",
+        "@dependencies//@types/react",
+        "@dependencies//axios",
+        "@dependencies//buffer",
         "@dependencies//lit",
         "@dependencies//lit-element",
+        "@dependencies//pwa-helpers",
+        "@dependencies//react",
         "@dependencies//redux",
         "@dependencies//redux-thunk",
-        "@dependencies//@lit-labs/react",
-        "@dependencies//react",
-        "@dependencies//@types/react",
-        "@dependencies//@emurgo/cardano-serialization-lib-browser",
-        "@dependencies//buffer",
-        "@dependencies//axios",
-        "@dependencies//tslib"
+        "@dependencies//tslib",
+        "//packages/cardano-api:js_library"
     ],
 )
 
 webpack(
-    name = "bundle",
-    outs = ["app.bundle.js"],
+    name = "dist",
     args = [
+        "--entry",
         "$(execpath src/index.js)",
+        "$(execpath src/react/index.js)",
+        "$(execpath src/redux/index.js)",
         "--config",
         "$(execpath webpack.config.js)",
         "-o",
-        "$@",
+        "$(@D)",
     ],
     data = [
         "src/index.js",
+        "src/react/index.js",
+        "src/redux/index.js",
         "webpack.config.js",
         ":build",
         "@dependencies//:node_modules",
+        "//packages/cardano-api:packed_js_library",
     ],
+    output_dir = True,
+)
+
+pkg_npm(
+    name = "package",
+    package_name = "@chain-lib/cardano-components",
+    srcs = ["package.json"],
+    deps = [":dist"],
+    validate=True,
 )

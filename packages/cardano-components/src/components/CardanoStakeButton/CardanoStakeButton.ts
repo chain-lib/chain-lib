@@ -3,7 +3,7 @@ import {customElement, property} from 'lit/decorators.js';
 import {Button} from '@material/mwc-button';
 import { html } from 'lit';
 import { Store } from '../../redux';
-import { initalizeWallet, stake, update } from '../../redux/cardanoWallet/actions';
+import { initalizeWallet, stake } from '../../redux/cardanoWallet/actions';
 import { loadDefaultStylesheets } from '../helper/loadStyle';
 
 @customElement('cardano-stake-button')
@@ -26,8 +26,9 @@ export class CardanoStakeButton extends connect(Store)(Button) {
     super.onclick = this.clickHandler;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   stateChanged(state : any) {
-    if(this.loading){
+    if(this.loading && state){
       this.loading = false;
     }
   }

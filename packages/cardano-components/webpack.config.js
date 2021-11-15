@@ -1,3 +1,5 @@
+const path = require('path');
+
 function getLoaders(){
     const styles = [
         {
@@ -23,19 +25,39 @@ function getLoaders(){
     return {
         rules: [wasm, esnext, ...styles],
     };
-}
+};
+
+const optimization = {
+    usedExports: true,
+    nodeEnv: false,
+    splitChunks: {
+      automaticNameDelimiter: '_',
+      chunks: 'all',
+      maxSize: 4000000,
+    }
+  };
 
 module.exports = (env, argv) => ({
     mode: argv.mode ? argv.mode : 'production',
+    output: {
+        filename: '[name].js',
+        path: path.resolve(__dirname, 'dist'),
+        library: {
+            type: 'umd',
+        },
+        umdNamedDefine: true,
+        publicPath: '',
+    },
     cache: false,
     target: 'web',
+    optimization,
     module: getLoaders(),
     experiments: {
         asyncWebAssembly: true,
         topLevelAwait: true,
    },
    resolve: {
-    extensions: ['.js','.jsx','.ts','.json','.wasm'],
+    extensions: ['.js','.json','.wasm'],
     preferRelative: true,
-   }
+   },
 });

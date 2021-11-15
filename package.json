@@ -33,7 +33,16 @@
     "pwa-helpers": "^0.9.1",
     "test262-harness": "^9.0.0",
     "tslib": "^2.3.1",
-    "webpack": "^5.63.0"
+    "webpack": "^5.63.0",
+    "@lit-labs/react": "^1.0.1",
+    "http-server": "^14.0.0",
+    "lit-element": "^3.0.1",
+    "react": "^17.0.2",
+    "redux": "^4.1.2",
+    "redux-thunk": "^2.4.0",
+    "time-fix-plugin": "^2.0.7",
+    "typescript": "^4.3.5",
+    "webpack-cli": "^4.9.1"
   },
   "scripts": {
     "build": "bazel build //...",
@@ -45,6 +54,8 @@
     "cz": "git-cz",
     "check-format": "prettier --list-different \"./**/*.{ts,js,json,md}\"",
     "check-spelling": "cspell --config=.cspell.json \"**/*.{md,ts,js}\"",
+    "check-publish-npm": "sh ./scripts/release.sh pack latest",
+    "publish-npm-next": "sh ./scripts/release.sh publish latest",
     "pre-commit": "yarn lint-staged",
     "pre-push": "yarn check-format && yarn check-spelling"
   },
@@ -74,16 +85,5 @@
         0
       ]
     }
-  },
-  "dependencies": {
-    "@lit-labs/react": "^1.0.1",
-    "http-server": "^14.0.0",
-    "lit-element": "^3.0.1",
-    "react": "^17.0.2",
-    "redux": "^4.1.2",
-    "redux-thunk": "^2.4.0",
-    "time-fix-plugin": "^2.0.7",
-    "typescript": "^4.3.5",
-    "webpack-cli": "^4.9.1"
   }
 }

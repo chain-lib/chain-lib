@@ -1,21 +1,20 @@
-/* eslint-disable import/extensions */
 import { connect } from 'pwa-helpers';
 import {customElement, property} from 'lit/decorators.js';
-import {Button} from "@material/mwc-button";
+import {Button} from '@material/mwc-button';
 import { Store } from '../../redux';
 import { connectWallet, initalizeWallet, update } from '../../redux/cardanoWallet/actions';
-import { loadDefaultStylesheets} from "../helper/loadStyle";
+import { loadDefaultStylesheets} from '../helper/loadStyle';
 
-@customElement('cardano-wallet-button')
-export class CardanoWalletButton extends connect(Store)(Button) {
+@customElement('cardano-connect-wallet-button')
+export class CardanoConnectWalletButton extends connect(Store)(Button) {
 
   wallet : boolean = false;
 
   @property({type: String})
-  connectedValue = "Connected";
+  connectedValue = 'Connected';
 
   @property({type: String})
-  disconnectedValue = "Please Connect Wallet";
+  disconnectedValue = 'Please Connect Wallet';
 
   @property({type:Boolean})
   bech32 = true
@@ -29,7 +28,7 @@ export class CardanoWalletButton extends connect(Store)(Button) {
   }
 
   stateChanged(state : any) {
-    if(typeof state.reducer.walletActive !== "undefined"){
+    if(typeof state.reducer.walletActive !== 'undefined'){
       this.wallet = state.reducer.walletActive;
       this._eventHandler(state);
       super.label = this.wallet? this.connectedValue : this.disconnectedValue;
@@ -49,7 +48,7 @@ export class CardanoWalletButton extends connect(Store)(Button) {
   }
 
   _eventHandler(state : any){
-    const connection = new CustomEvent("state", {
+    const connection = new CustomEvent('state', {
       detail: state,
       bubbles : true,
       composed : true

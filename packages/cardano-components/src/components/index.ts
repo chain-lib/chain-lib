@@ -1,3 +1,5 @@
 export { CardanoStakeButton } from './CardanoStakeButton/CardanoStakeButton';
 export { CardanoWalletButton } from './ConnectWallet/ConnectWallet';
-export { Send } from './Send/Send';
+export { CardanoSendButton } from './CardanoSendButton/CardanoSendButton';
+export { CardanoInitialize } from './CardanoInitialize/CardanoInitialize';
+

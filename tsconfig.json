@@ -1,0 +1,57 @@
+{
+    "compilerOptions": {
+      "target": "es2018",
+      "module": "esnext",
+      "lib": ["es2020","dom"],
+      "moduleResolution": "node",
+      "noEmitOnError": true,
+      "strict": true,
+      "resolveJsonModule": true,
+      "noUnusedLocals": true,
+      "composite": true,
+      "esModuleInterop": true,
+      "noUnusedParameters": true,
+      "preserveConstEnums": true,
+      "allowSyntheticDefaultImports": true,
+      "noFallthroughCasesInSwitch": true,
+      "declaration": true,
+      "incremental": true,
+      "removeComments": true,
+      "outDir": "dist",
+      "paths": {
+        "@chain-lib/*": [
+            "./packages/*/src",
+            "bazel-out/x64_windows-fastbuild/bin/packages/*/src",
+            "bazel-out/x64_windows-dbg/bin/packages/*/src",
+            "bazel-out/k8-fastbuild/bin/packages/*/src",
+            "bazel-out/k8-dbg/bin/packages/*/src",
+            "bazel-out/host/bin/packages/*/src",
+            "bazel-out/darwin-fastbuild/bin/packages/*/src",
+            "bazel-out/darwin-dbg/bin/packages/*/src",
+        ],
+      },
+      "baseUrl": ".",
+      "rootDirs": [
+        ".",
+  
+        "./packages/cardano-api",
+        "./bazel-out/host/bin/packages/cardano-api",
+        "./bazel-out/darwin-fastbuild/bin/packages/cardano-api",
+        "./bazel-out/k8-fastbuild/bin/packages/cardano-api",
+        "./bazel-out/x64_windows-fastbuild/bin/packages/cardano-api",
+        "./bazel-out/darwin-dbg/bin/packages/cardano-api",
+        "./bazel-out/k8-dbg/bin/packages/cardano-api",
+        "./bazel-out/x64_windows-dbg/bin/packages/cardano-api",
+  
+        "./packages/cardano-components",
+        "./bazel-out/host/bin/packages/cardano-components",
+        "./bazel-out/darwin-fastbuild/bin/packages/cardano-components",
+        "./bazel-out/k8-fastbuild/bin/packages/cardano-components",
+        "./bazel-out/x64_windows-fastbuild/bin/packages/cardano-components",
+        "./bazel-out/darwin-dbg/bin/packages/cardano-components",
+        "./bazel-out/k8-dbg/bin/packages/cardano-components",
+        "./bazel-out/x64_windows-dbg/bin/packages/cardano-components",
+      ]
+    }
+  }
+  

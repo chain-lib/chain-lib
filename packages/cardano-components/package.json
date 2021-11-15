@@ -4,6 +4,23 @@
   "license": "MIT",
   "author": "chain-lib",
   "version": "0.0.0",
+  "keywords": [
+    "cardano", "chain-lib", "chainlib"
+  ],
+  "main": "dist/main.js",
+  "module": "dist/main.js",
+  "exports": {
+    ".": "./dist/main.js"
+  },
+  "homepage": "https://github.com/chain-lib/chain-lib/tree/main/packages/cardano-components",
+  "bugs": {
+    "url" : "https://github.com/chain-lib/chain-lib/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chain-lib/chain-lib.git",
+    "directory": "packages/cardano-components"
+  },
   "devDependencies": {
     "pwa-helpers": "^0.9.1",
     "@material/mwc-button": "^0.25.1",
@@ -16,7 +33,8 @@
     "@emurgo/cardano-serialization-lib-browser":"^9.1.1",
     "buffer":"^6.0.3",
     "axios":"^0.24.0",
-    "tslib": "^2.3.1"
+    "tslib": "^2.3.1",
+    "@chain-lib/cardano-api": "0.0.0"
   },
-  "customElements": "custom-elements.json"
+  "sideEffects": "false"
 }

@@ -20,3 +20,8 @@ coverage
 # Parcel cache and distribution folders
 .cache/
 dist/
+
+# Any build output for npm
+*.tgz
+
+.DS_STORE
