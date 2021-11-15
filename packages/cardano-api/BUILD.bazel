@@ -60,8 +60,9 @@ js_library(
 pkg_npm(
     name = "package",
     package_name = "@chain-lib/cardano-api",
-    srcs = ["package.json"],
-    deps = [":dist"],
+    srcs = ["package.json","README.md"],
+    deps = [":dist","README.md"],
     validate=True,
+    tgz="chain-lib-cardano-api.tgz"
 )
 
