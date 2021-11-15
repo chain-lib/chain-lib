@@ -1,6 +1,5 @@
-import { html } from 'lit-html';
-// eslint-disable-next-line import/extensions
-import './Send';
+import { html } from 'lit';
+import './CardanoSendButton';
 
 export default {
   title: 'Cardano Send Button',

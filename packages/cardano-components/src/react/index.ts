@@ -1,2 +1,4 @@
 export { ReactCardanoStakeButton } from './ReactCardanoStakeButton';
-export { ReactConnectWallet } from './ReactConnectWallet';
+export { ReactCardanoWalletButton } from './ReactCardanoConnectWalletButton';
+export { ReactCardanoSendButton } from './ReactCardanoSendButton';
+export { ReactCardanoInitialize } from './ReactCardanoInitialize';

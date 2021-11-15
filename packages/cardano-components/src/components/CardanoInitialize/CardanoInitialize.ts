@@ -4,7 +4,7 @@ import { LitElement, html, css } from 'lit';
 
 
 @customElement('cardano-initialize')
-export class CardanoInitalize extends LitElement {
+export class CardanoInitialize extends LitElement {
 
   @property({type: Object})
   config : any = {};

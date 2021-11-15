@@ -7,7 +7,7 @@ import { initalizeWallet, send } from '../../redux/cardanoWallet/actions';
 import { loadDefaultStylesheets } from '../helper/loadStyle';
 
 @customElement('cardano-send-button')
-export class Send extends connect(Store)(Button) {
+export class CardanoSendButton extends connect(Store)(Button) {
 
   @property({type: Array})
   recipients : Array<Object> = [];
@@ -59,4 +59,3 @@ export class Send extends connect(Store)(Button) {
     Store.dispatch(send(this.recipients, metadata, metadataLabel));
   }
 }
-

@@ -1,2 +1,2 @@
-export { Send, CardanoWalletButton, CardanoStakeButton } from './components/index';
+export { CardanoSend, CardanoWalletButton, CardanoStakeButton } from './components/index';
 

@@ -1,10 +1,9 @@
 import { html } from 'lit-html';
-// eslint-disable-next-line import/extensions
-import './ConnectWallet';
+import './CardanoConnectWalletButton';
 
 export default {
   title: 'Cardano Connect Wallet Button',
-  component: 'cardano-wallet-button'
+  component: 'cardano-connect-wallet-button'
 };
 
 export const Primary = () =>

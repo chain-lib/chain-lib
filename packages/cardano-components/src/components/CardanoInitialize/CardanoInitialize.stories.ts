@@ -1,5 +1,5 @@
 import { html } from 'lit';
-import './Initialize';
+import './CardanoInitialize';
 
 export default {
   title: 'Invisible Initialization component',

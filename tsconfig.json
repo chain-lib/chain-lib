@@ -28,7 +28,6 @@
             "bazel-out/host/bin/packages/*/src",
             "bazel-out/darwin-fastbuild/bin/packages/*/src",
             "bazel-out/darwin-dbg/bin/packages/*/src",
-            
         ],
       },
       "baseUrl": ".",

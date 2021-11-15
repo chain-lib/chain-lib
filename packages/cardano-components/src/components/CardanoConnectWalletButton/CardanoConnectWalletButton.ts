@@ -5,8 +5,8 @@ import { Store } from '../../redux';
 import { connectWallet, initalizeWallet, update } from '../../redux/cardanoWallet/actions';
 import { loadDefaultStylesheets} from '../helper/loadStyle';
 
-@customElement('cardano-wallet-button')
-export class CardanoWalletButton extends connect(Store)(Button) {
+@customElement('cardano-connect-wallet-button')
+export class CardanoConnectWalletButton extends connect(Store)(Button) {
 
   wallet : boolean = false;
 
