@@ -41,10 +41,121 @@ Due to how the serization libraries work, you currently need to compile your cod
 ## Usage
 These commands are organized as follows. Remember API is the initalized object from earlier.
 ### API.Commands
-```
+These commands follow the basic CIP[https://github.com/cardano-foundation/CIPs/pull/88] standard. All functions are promises. 
 
 ```
+CardanoAPI.Commands.enable: () => Promise<Boolean>;
+```
+If the user has one of the wallets references when constructing CardanoAPI this will ask the user to connect to the website for the first time, and retruns true. Otherwise it will throw an error. If they already have permision it will return true.
+
+```
+CardanoAPI.Commands.isEnabled: () => Promise<Boolean>;
+```
+This returns true if the user has access to request the website, false otherwise.
+```
+CardanoAPI.Commands.getBalance: () => Promise<Value>;
+```
+Value is a hex encoded cbor string.
+```
+getUtxos: (amount?: Value | undefined, paginate?: {page: number; limit: number;} | undefined) => Promise<Array<TransactionUnspentOutput>>;
+```
+TransactionUnspentOutput is a hex encoded bytes string. Amount and paginate are optional parameters. They are meant to filter the utxos of the wallet.
+```
+CardanoAPI.Commands.getCollateral: () => Promise<TransactionUnspentOutput>;
+```
+This will get the users smart contract collateral.
+```
+CardanoAPI.Commands.getUnusedAddresses: (type?: string | undefined) => Promise<Array<BaseAddress>>;
+CardanoAPI.Commands.getUsedAddresses: (type?: string | undefined) => Promise<Array<BaseAddress>>;
+CardanoAPI.Commands.getChangeAddress: (type?: string | undefined) => Promise<BaseAddress>;
+CardanoAPI.Commands.getRewardAddress: (type?: string | undefined) => Promise<RewardAddress>;
+```
+By default BaseAddress and RewardAddress will return by default a hex encoded bytes string. You have the option to return a bech32 (human readable) address with the type field. The accepted types are 'hex' or 'bech32'. You can also get theses types by using CardanoAPI.AddressReturnType.hex or CardanoAPI.AddressReturnType.bech32.
+```
+CardanoAPI.Commands.getNetworkId: () => Promise<number>;
+```
+Returns 0 if on testnet, otherwise 1 if on mainnet.
+
+```
+CardanoAPI.Commands.signData: (address: BaseAddress | RewardAddress, payload: string) => Promise<CoseSign1>;
+```
+Payload is a hex encoded utf8 string. CoseSign1 is a hex encoded bytes string.
+
+If address is the BaseAddress the signature is returned with the Payment Credential, otherwise if the address is the RewardAddress the signature is returned with the Stake Credential.
+
+The returned CoseSign1 object contains the payload, signature and the following protected headers:
+
+key_id => PublicKey,
+address => BaseAddress | RewardAddress
+algorithm_id => EdDSA(0) (the algorithm used for Cardano addresses).
+```
+CardanoAPI.Commands.signTx: (tx: Transaction, partialSign?: boolean | undefined) => Promise<TransactionWitnessSet>;
+```
+Transaction is a hex encoded cbor string. TransactionWitnessSet is a hex encoded cbor string.
+
+partialSign is by default false and optional. The wallet needs to provide all required signatures. If it can't an error is thrown, otherwise the TransactionWitnessSet is returned.
+
+If partialSign is true, the wallet doesn't need to provide all required signatures.
+```
+CardanoAPI.Commands.submitTx: (tx: Transaction) => Promise<hash32>;
+```
+Returns the transaction hash, if transaction was submitted successfully, otherwise throws an error.
+
 ### API.Send
 ```
-
+CardanoAPI.Send.send: ({ address, amount, assets, metadata, metadataLabel }: Send) => Promise<string>;
 ```
+This allows you to send items from the users address to another address. Some examples are below. Adderess is a human readable bech32 address. Amount is a number. Metadatalabel is a number, with a default to 721. 
+```
+await CardanoAPI.Send.send({
+        address: "addr1qyzu9rqav3su8duqwz8eadj60 5ldx3qcpfm0e4epc3rffmw09arg9qq Hqd7hlrg64xp5uwmqry3h24np7xqfcXy09gtqh228zy",
+        amount: 40
+      })
+    
+
+await CardanoAPI.Send.send({
+    address: "addr1qyzu9rqav3su8duqwz8eadj60 5ldx3qcpfm0e4epc3rffmw09arg9qq Hqd7hlrg64xp5uwmqry3h24np7xqfcXy09gtqh228zy",
+    amount: 20,
+    assets: [
+        {
+            "unit": "5230d16116431597796d250dcd7acf1e3afb717bf66c8108abdc83df.KnittieAstro031",
+            "quantity": "1"
+        }
+    ],
+    metadata: {
+        "RandomData": "My random metadata"
+    }
+})
+```
+```
+CardanoAPI.Send.sendMultiple: ({ recipients, metadata, metadataLabel }: SendMultiple) => Promise<string>;
+```
+You can also send to multiple users with one command. See an example below.
+```
+await CardanoAPI.Send.sendMultiple({
+    recipients: [
+        {
+            address: "",
+            amount: 5,
+            assets: [
+                {
+                    "unit": "",
+                    "quantity": "1"
+                }
+            ]
+        },
+        {
+            address: "",
+            amount: 47
+        },
+        {
+            address: "",
+            amount: 22
+        }
+    ],
+})
+```
+```
+CardanoAPI.Send.delegate: ({ stakepoolId, metadata, metadataLabel }: Delegate) => Promise<string>;
+```
+This allows you to let the user stake with any stakepool. Currently due to some errors not related to this API, there is a chance this never resolves if the user cancels the transaction. Otherwise it will return the transaction hash. You can ignore the metadata and metadataLabel tag. StakepooId can either be the hex32 or bech stakepool address.

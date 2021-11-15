@@ -107,6 +107,10 @@ export class Commands {
         );
     }
 
+    getCollateral = async() : Promise<TransactionUnspentOutput> => {
+        return await this.Cardano.getCollateral();
+    }
+
     getBalance = async() : Promise<Value> => {
         return await this.Cardano.getBalance();
     }
