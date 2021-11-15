@@ -105,7 +105,7 @@ Returns the transaction hash, if transaction was submitted successfully, otherwi
 ```
 CardanoAPI.Send.send: ({ address, amount, assets, metadata, metadataLabel }: Send) => Promise<string>;
 ```
-This allows you to send items from the users address to another address. Some examples are below. Adderess is a human readable bech32 address. Amount is a number. Metadatalabel is a number, with a default to 721. 
+This allows you to send items from the users address to another address. Some examples are below. Adderess is a human readable bech32 address. Amount is a number which is in ADA. The value is not in lovelace, the value is in **ADA**. Metadatalabel is a number, with a default to 721. 
 ```
 await CardanoAPI.Send.send({
         address: "addr1qyzu9rqav3su8duqwz8eadj60 5ldx3qcpfm0e4epc3rffmw09arg9qq Hqd7hlrg64xp5uwmqry3h24np7xqfcXy09gtqh228zy",
