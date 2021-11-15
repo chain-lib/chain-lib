@@ -23,3 +23,5 @@ dist/
 
 # Any build output for npm
 *.tgz
+
+.DS_STORE
