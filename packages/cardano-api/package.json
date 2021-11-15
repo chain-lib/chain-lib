@@ -1,9 +1,9 @@
 {
   "name": "@chain-lib/cardano-api",
-  "description": "Commands for interacting with cardano wallets",
+  "description": "Commands for interacting with cardano wallets.",
   "license": "MIT",
   "author": "chain-lib",
-  "version": "0.0.0",
+  "version": "0.0.2",
   "keywords": [
     "cardano", "chain-lib", "chainlib"
   ],

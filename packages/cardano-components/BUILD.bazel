@@ -55,7 +55,7 @@ webpack(
         "webpack.config.js",
         ":build",
         "@dependencies//:node_modules",
-        "//packages/cardano-api:packed_js_library",
+        "//packages/cardano-api:packed_js_library"
     ],
     output_dir = True,
 )
@@ -63,7 +63,8 @@ webpack(
 pkg_npm(
     name = "package",
     package_name = "@chain-lib/cardano-components",
-    srcs = ["package.json"],
-    deps = [":dist"],
+    srcs = ["package.json","README.md"],
+    deps = [":dist","README.md"],
     validate=True,
+    tgz="chain-lib-cardano-components.tgz"
 )
