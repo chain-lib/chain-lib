@@ -8,5 +8,5 @@ export default {
 
 export const Primary = () =>
 html`
-  <cardano-wallet-button></cardano-wallet-button>
+  <cardano-connect-wallet-button></cardano-connect-wallet-button>
 `;
