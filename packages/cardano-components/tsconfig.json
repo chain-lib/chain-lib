@@ -3,7 +3,12 @@
   "include": ["./**/*.ts"],
   "compilerOptions": {
     "experimentalDecorators": true,
-    "declaration": true
+    "declaration": true,
+    "plugins": [
+      {
+        "name": "ts-lit-plugin"
+      }
+    ]
   },
   "references": [{ "path": "../cardano-api" }],
 }

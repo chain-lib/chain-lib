@@ -24,6 +24,7 @@ export class CardanoConnectWalletButton extends connect(Store)(Button) {
     loadDefaultStylesheets();
     Store.dispatch(initalizeWallet());
     Store.dispatch(update());
+    console.log("hello");
     super.onclick = this.clickHandler;
   }
 

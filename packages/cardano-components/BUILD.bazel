@@ -1,5 +1,6 @@
 load("@build_bazel_rules_nodejs//:index.bzl", "pkg_npm")
 load("@dependencies//@bazel/typescript:index.bzl", "ts_config", "ts_project")
+load("@dependencies//http-server:index.bzl", "http_server")
 load("@dependencies//webpack-cli:index.bzl", webpack = "webpack_cli")
 
 package(default_visibility = ["//visibility:public"])
@@ -40,7 +41,7 @@ webpack(
     name = "dist",
     args = [
         "--entry",
-        "$(execpath src/index.js)",
+        "$(execpath src/components/index.js)",
         "$(execpath src/react/index.js)",
         "$(execpath src/redux/index.js)",
         "--config",
@@ -49,7 +50,7 @@ webpack(
         "$(@D)",
     ],
     data = [
-        "src/index.js",
+        "src/components/index.js",
         "src/react/index.js",
         "src/redux/index.js",
         "webpack.config.js",
@@ -67,4 +68,9 @@ pkg_npm(
     deps = [":dist","README.md"],
     validate=True,
     tgz="chain-lib-cardano-components.tgz"
+)
+
+http_server(
+    name = "server",
+    data = [":package"],
 )

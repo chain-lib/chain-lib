@@ -34,7 +34,7 @@
     "buffer":"^6.0.3",
     "axios":"^0.24.0",
     "tslib": "^2.3.1",
-    "@chain-lib/cardano-api": "0.0.0"
+    "@chain-lib/cardano-api": "^0.0.2"
   },
   "sideEffects": "false"
 }

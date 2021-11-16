@@ -2,7 +2,6 @@ import { CardanoAPI } from '@chain-lib/cardano-api';
 import {customElement, property} from 'lit/decorators.js';
 import { LitElement, html, css } from 'lit';
 
-
 @customElement('cardano-initialize')
 export class CardanoInitialize extends LitElement {
 
@@ -14,7 +13,8 @@ export class CardanoInitialize extends LitElement {
     this.initialize();
   }
 
-  async initialize() {
+  async initialize() : Promise<void> {
+    console.log("initial");
     new CardanoAPI(
       CardanoAPI.WalletId(CardanoAPI.Wallet.nami),
       CardanoAPI.BlockfrostAPIKey(this.config?.blockfrost ? this.config.blockfrost : {}),
