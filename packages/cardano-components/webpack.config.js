@@ -52,6 +52,8 @@ module.exports = (env, argv) => ({
     target: 'web',
     optimization,
     module: getLoaders(),
+    plugins: [
+    ],
     experiments: {
         asyncWebAssembly: true,
         topLevelAwait: true,

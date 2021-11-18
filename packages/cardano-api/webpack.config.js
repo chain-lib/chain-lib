@@ -1,4 +1,5 @@
 const path = require('path');
+const CopyPlugin = require('copy-webpack-plugin');
 
 const optimization = {
     usedExports: true,
@@ -7,7 +8,7 @@ const optimization = {
       automaticNameDelimiter: '_',
       chunks: 'all',
       maxSize: 4000000,
-    }
+    },
 };
 
 module.exports = (env, argv) => ({
@@ -15,6 +16,8 @@ module.exports = (env, argv) => ({
     cache: false,
     target: 'web',
     optimization,
+    plugins: [
+    ],
     output: {
         filename: '[name].js',
         path: path.resolve(__dirname, 'dist'),
@@ -38,7 +41,7 @@ module.exports = (env, argv) => ({
     ],
    },
    resolve: {
-    extensions: ['.js','.jsx','.json'],
+    extensions: ['.js','.jsx','.json','.ts'],
     preferRelative: true,
    }
 });
