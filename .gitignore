@@ -20,6 +20,7 @@ coverage
 # Parcel cache and distribution folders
 .cache/
 dist/
+package/
 
 # Any build output for npm
 *.tgz
