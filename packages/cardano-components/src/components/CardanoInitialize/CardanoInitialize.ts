@@ -1,4 +1,5 @@
-import { CardanoAPI } from '@chain-lib/cardano-api';
+import { Blockfrost, Spend } from '@chain-lib/cardano-api';
+import { API } from '../../redux/cardanoWallet';
 import {customElement, property} from 'lit/decorators.js';
 import { LitElement, html, css } from 'lit';
 
@@ -14,13 +15,11 @@ export class CardanoInitialize extends LitElement {
   }
 
   async initialize() : Promise<void> {
-    console.log("initial");
-    new CardanoAPI(
-      CardanoAPI.WalletId(CardanoAPI.Wallet.nami),
-      CardanoAPI.BlockfrostAPIKey(this.config?.blockfrost ? this.config.blockfrost : {}),
-      await CardanoAPI.CardanoSerializationLibrary(
-          await import('@emurgo/cardano-serialization-lib-browser/cardano_serialization_lib.js'))
-      );
+    const serializationLib = await import('@emurgo/cardano-serialization-lib-browser/cardano_serialization_lib.js');
+    await API.register({
+      plugins : [Blockfrost(this.config?.blockfrost ? this.config.blockfrost : {}), Spend()],
+      cardanoSerializationLibrary : serializationLib,
+    });
   }
 
   static styles = css`

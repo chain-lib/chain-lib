@@ -12,6 +12,7 @@
       "esModuleInterop": true,
       "noUnusedParameters": true,
       "preserveConstEnums": true,
+      "noImplicitThis" : false,
       "allowSyntheticDefaultImports": true,
       "noFallthroughCasesInSwitch": true,
       "declaration": true,

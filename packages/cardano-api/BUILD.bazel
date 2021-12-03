@@ -1,6 +1,6 @@
-load("@build_bazel_rules_nodejs//:index.bzl", "pkg_npm", "js_library")
+load("@build_bazel_rules_nodejs//:index.bzl", "js_library", "pkg_npm")
+load("@dependencies//@bazel/esbuild:index.bzl", "esbuild", "esbuild_config")
 load("@dependencies//@bazel/typescript:index.bzl", "ts_config", "ts_project")
-load("@dependencies//webpack-cli:index.bzl", webpack = "webpack_cli")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -15,9 +15,9 @@ ts_project(
     srcs = glob(["src/**/*.ts"]),
     composite = True,
     declaration = True,
+    extends = "tsconfig_lib",
     incremental = True,
     resolve_json_module = True,
-    extends = "tsconfig_lib",
     deps = [
         "@dependencies//@emurgo/cardano-serialization-lib-asmjs",
         "@dependencies//axios",
@@ -25,44 +25,58 @@ ts_project(
     ],
 )
 
+esbuild_config(
+    name = "esbuildconfig",
+    config_file = "esbuild.config.js",
+    deps = ["@dependencies//esbuild-node-externals"],
+)
+
+esbuild(
+    name = "esm",
+    config = ":esbuildconfig",
+    entry_point = "src/index.ts",
+    format = "esm",
+    output_dir = True,
+    splitting = True,
+    target = "es2015",
+    deps = [":build"],
+)
+
+esbuild(
+    name = "cjs",
+    config = ":esbuildconfig",
+    entry_point = "src/index.ts",
+    format = "cjs",
+    output_dir = True,
+    splitting = True,
+    deps = [":build"],
+)
+
 js_library(
     name = "js_library",
     package_name = "@chain-lib/cardano-api",
     srcs = ["package.json"],
-    deps = [":build","tsconfig_lib"],
-)
-
-webpack(
-    name = "dist",
-    args = [
-        "$(execpath src/index.js)",
-        "--config",
-        "$(execpath webpack.config.js)",
-        "-o",
-        "$(@D)",
-    ],
-    data = [
-        "src/index.js",
-        "webpack.config.js",
+    deps = [
         ":build",
-        "@dependencies//:node_modules",
+        ":cjs",
+        ":esm",
+        ":tsconfig_lib",
     ],
-    output_dir = True,
-)
-
-js_library(
-    name = "packed_js_library",
-    package_name = "@chain-lib/cardano-api",
-    srcs = ["package.json"],
-    deps = [":dist"],
 )
 
 pkg_npm(
     name = "package",
     package_name = "@chain-lib/cardano-api",
-    srcs = ["package.json","README.md"],
-    deps = [":dist","README.md"],
-    validate=True,
-    tgz="chain-lib-cardano-api.tgz"
+    srcs = [
+        "README.md",
+        "package.json",
+    ],
+    tgz = "chain-lib-cardano-api.tgz",
+    validate = True,
+    deps = [
+        "README.md",
+        ":build",
+        ":cjs",
+        ":esm",
+    ],
 )
-

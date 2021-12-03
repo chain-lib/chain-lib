@@ -10,5 +10,4 @@
       }
     ]
   },
-  "references": [{ "path": "../cardano-api" }],
 }

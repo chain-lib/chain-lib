@@ -5,6 +5,7 @@
   "devDependencies": {
     "@bazel/bazelisk": "latest",
     "@bazel/buildifier": "latest",
+    "@bazel/esbuild": "^4.4.5",
     "@bazel/ibazel": "latest",
     "@bazel/typescript": "^4.4.2",
     "@commitlint/cli": "^13.2.1",
@@ -26,7 +27,9 @@
     "depcheck": "^1.4.2",
     "dts-bundle": "^0.7.3",
     "dts-bundle-webpack": "^1.0.2",
+    "esbuild": "^0.13.14",
     "esbuild-loader": "^2.16.0",
+    "esbuild-node-externals": "^1.4.0",
     "eslint-config-prettier": "^8.3.0",
     "http-server": "^14.0.0",
     "husky": "^7.0.4",
@@ -52,7 +55,7 @@
   "scripts": {
     "build": "bazel build //...",
     "test": "bazel test //...",
-    "lint": "yarn run bazel:format && yarn run bazel:lint && yarn doctor && yarn depcheck",
+    "lint": "yarn run bazel:format && yarn run bazel:lint && yarn doctor && yarn depcheck && yarn run check-format",
     "bazel:format": "find . -type f \\( -name \"*.bzl\" -or -name WORKSPACE -or -name BUILD -or -name BUILD.bazel \\) ! -path \"*/node_modules/*\" | xargs buildifier -v --warnings=attr-cfg,attr-license,attr-non-empty,attr-output-default,attr-single-file,constant-glob,ctx-actions,ctx-args,depset-iteration,depset-union,dict-concatenation,duplicated-name,filetype,git-repository,http-archive,integer-division,load,load-on-top,native-build,native-package,out-of-order-load,output-group,package-name,package-on-top,positional-args,redefined-variable,repository-name,same-origin-load,string-iteration,unsorted-dict-items,unused-variable",
     "bazel:lint": "yarn bazel:format --lint=warn",
     "bazel:lint-fix": "yarn bazel:format --lint=fix",
@@ -91,5 +94,6 @@
         0
       ]
     }
-  }
+  },
+  "packageManager": "yarn@3.1.0"
 }

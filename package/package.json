@@ -1,0 +1,53 @@
+{
+  "name": "@chain-lib/cardano-components",
+  "description": "Web components useful for interacting with the cardano blockchain.",
+  "license": "MIT",
+  "author": "chain-lib",
+  "version": "0.0.7",
+  "types": "./src/components/index.d.ts",
+  "keywords": [
+    "cardano", "chain-lib", "chainlib"
+  ],
+  "main": "cjs/components/index.js",
+  "module": "esm/components/index.js",
+  "exports": {
+      ".": {
+          "import": "./esm/components/index.js",
+          "require": "./cjs/components/index.js"
+      },
+      "./react": {
+          "import": "./esm/react/index.js",
+          "require": "./cjs/react/index.js"
+      },
+      "./redux": {
+        "import": "./esm/redux/index.js",
+        "require": "./cjs/redux/index.js"
+      }
+
+  },
+  "homepage": "https://github.com/chain-lib/chain-lib/tree/main/packages/cardano-components",
+  "bugs": {
+    "url" : "https://github.com/chain-lib/chain-lib/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chain-lib/chain-lib.git",
+    "directory": "packages/cardano-components"
+  },
+  "devDependencies": {
+    "pwa-helpers": "^0.9.1",
+    "@material/mwc-button": "^0.25.1",
+    "lit": "^2.0.2",
+    "redux": "^4.1.2",
+    "redux-thunk": "^2.4.0",
+    "@lit-labs/react": "^1.0.1",
+    "react": "^17.0.2",
+    "@types/react": "^17.0.2",
+    "@emurgo/cardano-serialization-lib-browser":"^9.1.1",
+    "buffer":"^6.0.3",
+    "axios":"^0.24.0",
+    "tslib": "^2.3.1",
+    "@chain-lib/cardano-api": "^0.0.2"
+  },
+  "sideEffects": "false"
+}
