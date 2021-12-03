@@ -1,82 +1,82 @@
 import { Commands } from './Commands';
-import { SelectCoin } from './SelectCoin';
-import { Blockfrost } from './Blockfrost';
-import { Spend } from './Send';
-export {CardanoAPI};
+import type * as CardanoSerializationLibrary from '@emurgo/cardano-serialization-lib-asmjs';
+import * as buffer from 'buffer';
+type Plugin = { name : string; exec : object};
 
-type CardanoAPIOption = (f: CardanoAPI) => void;
+export type Configure = { 
+  plugins : Plugin[]; 
+  cardanoSerializationLibrary : typeof CardanoSerializationLibrary; 
+};
 
 declare let window : any;
 
-class CardanoAPI{
-    public Commands : any;
+export const CardanoAPIExperimental = async(configure : Configure) => {
+  const API = CardanoAPIObject;
+  await API.register(configure);
+  return API;
+};
 
-    public Send : any;
-
-    private SelectCoin : any;
-
-    private Blockfrost : any;
-
-    private Cardano : any;
-
-    private Buffer : any;
-
-    private Wasm : any;
-
-    private Axios : any;
-
-    private BlockfrostAPIKey : any;
-
-    private static Instance : any;
-
-    public static Wallet = {
-      nami : window.cardano,
+export const CardanoAPIObject = {
+  _wallet : window.cardano,
+  get wallet(){
+    if(this._wallet){
+      return this._wallet;
     }
-
-    public static AddressReturnType = {
-      hex : 'hex',
-      bech32 : 'bech32',
-      hexString : 'hexString',
-      bech32String : 'bech32String'
+    throw new Error('window.cardano() is not injected by the user');
+  },
+  _serializationLib : undefined as undefined | typeof CardanoSerializationLibrary,
+  get serializationLib() : typeof CardanoSerializationLibrary{
+    if(this._serializationLib){
+      return this._serializationLib;  
     }
-
-    constructor(...options: Array<CardanoAPIOption>) {
-        if (CardanoAPI.Instance) {
-          return CardanoAPI.Instance;
-        }
-        CardanoAPI.Instance = this;
-        if(options){
-          for (const option of options) {
-            option(this);
-          }
-        }
-
-        this.Commands = new Commands(this.Cardano,this.Buffer,this.Wasm);
-        this.Blockfrost = new Blockfrost(this.Axios,this.Cardano,this.BlockfrostAPIKey);
-        this.SelectCoin = new SelectCoin(this.Wasm);
-        this.Send = new Spend(this.Commands, this.Blockfrost, this.Wasm, this.Buffer, this.SelectCoin );
+    throw new Error('You must initialize one of @emurgo/cardano-serialization-library');
+  },
+  set serializationLib(serializationLib : typeof CardanoSerializationLibrary){
+    if(serializationLib){
+      this._serializationLib = serializationLib;
+      return;
+    }
+    throw new Error(`cardanoSerializationLib is invalid. Please initalize 
+    one of @emurgo/cardano-serialization-library`);
+  },
+  buffer : buffer.Buffer,
+  plugins : {},
+  _addressReturnType: {
+    hex: 'hex',
+    bech32: 'bech32'
+  },
+  get addressReturnType() : {hex : 'string'; bech32 : 'string'} {
+    return this._addressReturnType;
+  },
+  baseCommands : Commands,
+  async register(configuration : Configure): Promise<void> {
+    // Checks for a valid config file
+    if(!Array.isArray(configuration.plugins)){
+      throw new Error('Registered plugins must be an array.');
+    }
+    if(!configuration.cardanoSerializationLibrary){
+      throw new Error('You must include one of the @emurgo/cardano-serialization-library');
+    }
+    // Sets a list of plugins
+    configuration.plugins.forEach((plugin) => {
+      if(!plugin.name || typeof plugin.name !== 'string'){
+        throw new Error (`Plugin: ${plugin.toString()} name must be a string.`);
       }
-
-      public static WalletId(walletId : any) : CardanoAPIOption {
-        //TODO : Upgrade this to allow an array of walletId or if ignored then incldue all wallet ids
-        return (f: CardanoAPI): void => {
-          f.Cardano = walletId;
-        };
+      if(!plugin.exec || typeof plugin.exec !== 'object'){
+        throw new Error (`Plugin: ${plugin.toString()} name must use object notation for exec.`);
       }
+      const obj = {[plugin.name] : plugin.exec};
+      Object.assign(this.plugins, obj);
+    });
+    // Sets serialization Library
+    this.serializationLib = configuration.cardanoSerializationLibrary;
+  }
+};
 
-      public static BlockfrostAPIKey(BlockfrostAPIKey : string) : CardanoAPIOption {
-        return (f: CardanoAPI): void => {
-          f.BlockfrostAPIKey = BlockfrostAPIKey;
-        };
-      }
+export const errorIfUndefined = <T>(item : T | undefined) : T => {
+  if(!item){
+      throw new Error('Value is undefined');
+  }
+  return item;
+};
 
-      public static async CardanoSerializationLibrary(serialization : any) : Promise<CardanoAPIOption> {
-        const Buffer = (await import('Buffer')).Buffer;
-        const Axios = (await import('Axios')).default;
-        return (f: CardanoAPI): void => {
-          f.Buffer = Buffer;
-          f.Axios = Axios;
-          f.Wasm = serialization;
-        };
-      }
-}

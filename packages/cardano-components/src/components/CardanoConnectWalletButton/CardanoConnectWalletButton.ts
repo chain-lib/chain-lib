@@ -41,8 +41,7 @@ export class CardanoConnectWalletButton extends connect(Store)(Button) {
     await new Promise((r) => setTimeout(r, 0));
     this.addEventListener('getWalletUpdates', this._update);
   }
-
-
+  
   _update = () => {
     Store.dispatch(update());
   }

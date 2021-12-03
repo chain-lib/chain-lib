@@ -1,42 +1,48 @@
-export class Blockfrost {
+import { CardanoAPIObject } from './CardanoAPI';
+import axios from 'axios';
+
+export const Blockfrost = (config : {mainnet? : string; testnet? : string; ipfs? : string}) => {
     
-    private Axios : any;
-    private Cardano : any;
-    private BlockfrostApiKey : any;
+    if(!config){
+        throw new Error('You must have a config file with either mainnet or testnet for this to work');
+    } 
+    if(config.mainnet || config.testnet || config.ipfs){
+    return {
+        name : 'data',
+        exec : {
+            request : async(endpoint : string, type? : string, ipfs? : boolean) : Promise<any> => {
+                if(!type){
+                    type = 'get';
+                }
+                const networkEndpoint = ipfs ? 'https://ipfs.blockfrost.io/api/v0' :
+                await CardanoAPIObject.baseCommands.getNetworkId() == 0 ? 
+                'https://Cardano-testnet.blockfrost.io/api/v0' : 
+                'https://Cardano-mainnet.blockfrost.io/api/v0';
+        
+                const apiKey = ipfs ? config.ipfs :
+                await CardanoAPIObject.baseCommands.getNetworkId() == 0 ? 
+                    config.testnet : 
+                    config.mainnet;
 
-    constructor(Axios : any, Cardano : any, BlockfrostApiKey : any){
-        this.Axios = Axios;
-        this.Cardano = Cardano;
-        this.BlockfrostApiKey = BlockfrostApiKey;
-    }
+                if(!apiKey){
+                    throw new Error('That api key does not exist on type config');
+                }
+        
+                const address = `${networkEndpoint}${endpoint}`;
+                
+                const response = await axios.request({
+                    url : address,
+                    headers : {'Content-Type': 'application/json', 'project_id': apiKey},
+                    //@ts-ignore
+                    method : type,       
+                }).catch((e : any)=>Promise.reject(e));
+        
+                return response;
+            }
 
-    blockfrostRequest = async(endpoint : string, method? : string, ipfs? : boolean) : Promise<any> => {
-
-        if(!method){
-            method = 'get';
         }
-        const networkEndpoint = ipfs ? 'https://ipfs.blockfrost.io/api/v0' :
-        await this.Cardano.getNetworkId() == 0 ? 'https://Cardano-testnet.blockfrost.io/api/v0' : 
-        'https://Cardano-mainnet.blockfrost.io/api/v0';
-
-        const apiKey = ipfs ? this.BlockfrostApiKey.ipfs :
-        await this.Cardano.getNetworkId() == 0 ? this.BlockfrostApiKey.testnet : 
-              this.BlockfrostApiKey.mainnet;
-
-        const address = `${networkEndpoint}${endpoint}`;
-       
-        const options = {
-            url: address,
-            method: method,
-            headers: {'Content-Type': 'application/json', 'project_id': apiKey},
-            validateStatus : false
-        };
-
-        const response = await this.Axios(options).
-        catch((e : any)=>Promise.reject(e));
-
-        // Note this doesnt ever throw errors, you must handle error situations in your code
-
-        return response;
+    };
     }
-}
+    throw new Error('Blockfrost plugin not loading. It likely has a bad config.');
+
+};
