@@ -27,7 +27,7 @@ await API.register({
 ```
 **cardanoSerializationLibrary** This accepts an async import of one of emurgos serialization libraries as an input. You can find them attached [here](https://www.npmjs.com/package/@emurgo/cardano-serialization-lib-browser). You can accept any of these as your input, just make sure you use the right ones for your use case.
 
- **onchainData** This package is optional, but if you want to use any features more complex than a basic wrapper around cip-30 compatible wallets, than you need to need to utalize a plugin which follows the abstract onchain data class. The only currently created one is a blockfrost, which can be imported by this package. It will be described more farther down. If you want to create your own package than find the abstract class [here](https://github.com/chain-lib/chain-lib/tree/main/packages/cardano-api/src/OnchainData/AbstractOnchainData.ts)
+ **onchainData** This package is optional, but if you want to use any features more complex than a basic wrapper around cip-30 compatible wallets, than you need to need to utalize a plugin which follows the abstract onchain data class. The only currently created one is a blockfrost, which can be imported by this package. It will be described more farther down. If you want to create your own package than find the abstract class [here](https://github.com/chain-lib/chain-lib/tree/main/packages/cardano-api/src/OnchainData/AbstractOnchainData.ts).
 
 ## Development
 Due to how the serization libraries work, you currently need to compile your code to es2017, and you need a few special rules. Specifically you need topLevelAwait by default. If you use emurgos WASM library you need asyncWebAssembly. Their libraries only seem to work well natively, with webpack.
