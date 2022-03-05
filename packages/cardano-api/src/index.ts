@@ -1,3 +1,5 @@
+
 export { CardanoAPIObject as CardanoAPI } from './CardanoAPI';
-export { Blockfrost } from './Blockfrost';
-export { Spend } from './Spend';
+export type { WalletInfo, Configure } from './CardanoAPI';
+export { Blockfrost } from './OnchainData/Blockfrost';
+export { detectCardanoLoad } from './DetectCardanoLoad'

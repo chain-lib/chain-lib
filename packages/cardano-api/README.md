@@ -12,37 +12,51 @@ yarn install @chain-lib/cardano-api
 npm install @chain-lib/cardano-api
 ```
 ## Usage
-Right now you can only initalize the package once, and then you can use your initial settings anywhere in your code. Below is an example using nami wallet api.
+
 ```javascript
-import { CardanoAPI } from @chain-lib/cardano-api
+import { CardanoAPI, Blockfrost } from @chain-lib/cardano-api
 
 const emurgoSerializationLib = await import('@emurgo/cardano-serialization-lib-browser/cardano_serialization_lib.js');
 
 const API = CardanoAPI;
 await API.register({
-    plugins : [],
-    cardanoSerializationLibrary : emurgoSerializationLib
+    cardanoSerializationLibrary : emurgoSerializationLib,
+    onchainData : Blockfrost({mainnet : "mainnet-key"})
 }),
 
 ```
-
-**plugins** This accepts a list of plugins that work with the API. Default plugins will be discussed toward the bottom.
-
 **cardanoSerializationLibrary** This accepts an async import of one of emurgos serialization libraries as an input. You can find them attached [here](https://www.npmjs.com/package/@emurgo/cardano-serialization-lib-browser). You can accept any of these as your input, just make sure you use the right ones for your use case.
 
+ **onchainData** This package is optional, but if you want to use any features more complex than a basic wrapper around cip-30 compatible wallets, than you need to need to utalize a plugin which follows the abstract onchain data class. The only currently created one is a blockfrost, which can be imported by this package. It will be described more farther down. If you want to create your own package than find the abstract class [here](https://github.com/chain-lib/chain-lib/tree/main/packages/cardano-api/src/OnchainData/AbstractOnchainData.ts)
+
 ## Development
-Due to how the serization libraries work, you currently need to compile your code to es2017, and you need a few special rules. Specifically you need topLevelAwait by default. If you use emurgos WASM library you need asyncWebAssembly. Their libraries only seem to work well natively, with webpack, and eslint.
+Due to how the serization libraries work, you currently need to compile your code to es2017, and you need a few special rules. Specifically you need topLevelAwait by default. If you use emurgos WASM library you need asyncWebAssembly. Their libraries only seem to work well natively, with webpack.
 
 ## Usage
 These commands are organized as follows. Remember API is the initalized object from earlier.
-### API.baseCommands
-These commands follow the basic CIP[https://github.com/cardano-foundation/CIPs/pull/88] standard. All functions are promises. 
+
+### API
+```javascript
+CardanoAPI.wallets => string[]
+```
+To get a list of wallets the user has installed, you can use the following command. It returns a string array of the names.
 
 ```javascript
-CardanoAPI.baseCommands.enable: () => Promise<Boolean>;
+CardanoAPI.getWalletInfo : () => Object[]
 ```
-If the user has one of the wallets references when constructing CardanoAPI this will ask the user to connect to the website for the first time, and retruns true. Otherwise it will throw an error. If they already have permision it will return true.
+If you want the wallet object, not just the strings you can also get a list of those.
+```javascript
+CardanoAPI.setWallet: (wallet : string) => Promise<void>
+```
+To set which wallet is active  you can run the following command.
 
+### API.baseCommands
+These commands follow the basic CIP[https://cips.cardano.org/cips/cip30/] standard. All functions are promises. 
+
+```javascript
+CardanoAPI.baseCommands.enable: () => Promise<Boolean | Object>;
+```
+If the user has one of the wallets references when constructing CardanoAPI this will ask the user to connect to the website for the first time, and retruns an object of the wallets other functions.. Otherwise it returns false.
 ```javascript
 CardanoAPI.baseCommands.isEnabled: () => Promise<Boolean>;
 ```
@@ -96,10 +110,11 @@ CardanoAPI.baseCommands.submitTx: (tx: Transaction) => Promise<hash32>;
 ```
 Returns the transaction hash, if transaction was submitted successfully, otherwise throws an error.
 
-# Default Plugins
+# Default OnchainData Plugin
+If you want to create your own package than find the abstract class [here](https://github.com/chain-lib/chain-lib/tree/main/packages/cardano-api/src/OnchainData/AbstractOnchainData.ts)
 
 ## Blockfrost
-This plugin is for getting external data from the blockchain. Its namespace is data. If you make a plugin with the name data, and another plugin uses it, you can get offchain data using your api as opposed to this one. This currently allows you to make api calls based on a variable for ipfs, otherwise it will check the user, and check if they are using the testnet or the mainnet and make the appropriate api call. You do not need every key, primarily mainnet / testnet depending on what your application is doing. Please do not hard code your api keys. Use environmental variables.
+This plugin is for getting external data from the blockchain via blockfrost. It follows the abstractOnchainData class.
 
 ```javascript
 import { CardanoAPI, Blockfrost } from @chain-lib/cardano-api;
@@ -108,48 +123,31 @@ const emurgoSerializationLib = await import('@emurgo/cardano-serialization-lib-b
 
 const API = CardanoAPI;
 await API.register({
-    plugins : [Blockfrost({
+    onchainData : Blockfrost({
         mainnet : mainnetKey,
         testnet : testnetKey,
-        ipfs : ipfsKey
-    })],
+    }),
     cardanoSerializationLibrary : emurgoSerializationLib
 }),
 ```
-## Spend
 
-In order to use this plugin you must also intialize the blockfrost plugin as well. Se setup below.
-```javascript
-import { CardanoAPI, Blockfrost, Spend } from @chain-lib/cardano-api;
+# Spend
 
-const emurgoSerializationLib = await import('@emurgo/cardano-serialization-lib-browser/cardano_serialization_lib.js');
-const API = CardanoAPI;
-await API.register({
-    plugins : [
-        Blockfrost({
-            mainnet : mainnetKey,
-            testnet : testnetKey,
-            ipfs : ipfsKey
-        }),
-        Spend()
-    ],
-    cardanoSerializationLibrary : emurgoSerializationLib
-}),
-```
+In order to use these commands you need a way to get onchainData following the previous section.
 
 ### 
 ```javascript
-CardanoAPI.plugins.spend.send: ({ address, amount, assets, metadata, metadataLabel }) => Promise<string>;
+CardanoAPI.spend.send: ({ address, amount, assets, metadata, metadataLabel }) => Promise<string>;
 ```
 This allows you to send items from the users address to another address. Some examples are below. Adderess is a human readable bech32 address. Amount is a number which is in ADA. The value is not in lovelace, the value is in **ADA**. Metadatalabel is a number, with a default to 721. 
 ```javascript
-await CardanoAPI.plugins.spend.send({
+await CardanoAPI.spend.send({
         address: "addr1qyzu9rqav3su8duqwz8eadj60 5ldx3qcpfm0e4epc3rffmw09arg9qq Hqd7hlrg64xp5uwmqry3h24np7xqfcXy09gtqh228zy",
         amount: 40
       })
     
 
-await CardanoAPI.plugins.spend.send({
+await CardanoAPI.spend.send({
     address: "addr1qyzu9rqav3su8duqwz8eadj60 5ldx3qcpfm0e4epc3rffmw09arg9qq Hqd7hlrg64xp5uwmqry3h24np7xqfcXy09gtqh228zy",
     amount: 20,
     assets: [
@@ -164,11 +162,11 @@ await CardanoAPI.plugins.spend.send({
 })
 ```
 ```javascript
-CardanoAPI.plugins.spend.sendMultiple: ({ recipients, metadata, metadataLabel }: SendMultiple) => Promise<string>;
+CardanoAPI.spend.sendMultiple: ({ recipients, metadata, metadataLabel }: SendMultiple) => Promise<string>;
 ```
 You can also send to multiple users with one command. See an example below.
 ```javascript
-await CardanoAPI.plugins.spend.sendMultiple({
+await CardanoAPI.spend.sendMultiple({
     recipients: [
         {
             address: "",
@@ -192,6 +190,6 @@ await CardanoAPI.plugins.spend.sendMultiple({
 })
 ```
 ```javascript
-CardanoAPI.plugins.spend.delegate: ({ stakepoolId, metadata, metadataLabel }: Delegate) => Promise<string>;
+CardanoAPI.spend.delegate: ({ stakepoolId, metadata, metadataLabel }: Delegate) => Promise<string>;
 ```
-This allows you to let the user stake with any stakepool. Currently due to some errors not related to this API, there is a chance this never resolves if the user cancels the transaction. Otherwise it will return the transaction hash. You can ignore the metadata and metadataLabel tag. StakepooId can either be the hex32 or bech stakepool address.
+This allows you to let the user stake with any stakepool. It returns the transaction hash if the user suceeds with the command. You can ignore the metadata and metadataLabel tag. StakepooId can either be the hex32 or bech stakepool address.

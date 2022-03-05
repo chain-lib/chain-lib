@@ -3,12 +3,13 @@ import { CARDANO_WALLET } from '.';
 
 const INITIAL_STATE = {
     walletActive : undefined,
-    rewardAddress : undefined,
+    rewardAddresseses : undefined,
     changeAddress : undefined,
     unusedAddresses : undefined,
     usedAddresses : undefined,
     stake: undefined,
     send: undefined,
+    initalized: false
 };
 
 function reducer(state=INITIAL_STATE,action : any){
@@ -17,7 +18,7 @@ function reducer(state=INITIAL_STATE,action : any){
             return {
                 ...state,
                 walletActive : action.payload?.walletActive,
-                rewardAddress : action.payload?.rewardAddress,
+                rewardAddresses : action.payload?.rewardAddresses,
                 changeAddress : action.payload?.changeAddress,
                 unusedAddresses : action.payload?.unusedAddresses,
                 usedAddresses : action.payload?.usedAddresses,
@@ -25,7 +26,7 @@ function reducer(state=INITIAL_STATE,action : any){
         case CARDANO_WALLET.ADDRESSES:
             return {
                 ...state,
-                rewardAddress : action.payload?.rewardAddress,
+                rewardAddresses : action.payload?.rewardAddresses,
                 changeAddress : action.payload?.changeAddress,
                 unusedAddresses : action.payload?.unusedAddresses,
                 usedAddresses : action.payload?.usedAddresses,
@@ -41,7 +42,11 @@ function reducer(state=INITIAL_STATE,action : any){
                 ...state,
                 send : action.payload?.send,
             };
-
+        case CARDANO_WALLET.INITALIZE:
+            return {
+                ...state,
+                initalized: action.payload?.initalize
+            };
         default:
             return state;
     }

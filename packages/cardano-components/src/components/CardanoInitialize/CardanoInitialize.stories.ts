@@ -1,5 +1,5 @@
 import { html } from 'lit';
-import './CardanoInitialize';
+import * as Initalize from './CardanoInitialize';
 
 export default {
   title: 'Invisible Initialization component',
@@ -8,5 +8,7 @@ export default {
 
 export const Primary = () =>
 html`
-  <cardano-initialize></cardano-initialize>
+<cardano-initalize config={"blockfrost":{"testnet":""}}></cardano-initialize>
 `;
+
+Initalize // Forces webpack (storybook) not to treeshake module

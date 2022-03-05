@@ -3,19 +3,12 @@
   "description": "Commands for interacting with cardano wallets.",
   "license": "MIT",
   "author": "chain-lib",
-  "version": "0.0.7",
+  "version": "0.0.0-PLACEHOLDER",
   "keywords": [
     "cardano", "chain-lib", "chainlib"
   ],
-  "main": "cjs/index.js",
-  "module": "esm/index.js",
+  "main": "bundle/main.js",
   "types": "./src/index.d.ts",
-  "exports": {
-      ".": {
-          "import": "./esm/index.js",
-          "require": "./cjs/index.js"
-      }
-  },
   "homepage": "https://github.com/chain-lib/chain-lib/tree/main/packages/cardano-api",
   "bugs": {
     "url" : "https://github.com/chain-lib/chain-lib/issues"
@@ -25,9 +18,9 @@
     "url": "https://github.com/chain-lib/chain-lib.git",
     "directory": "packages/cardano-api"
   },
-  "devDependencies": {
+  "dependencies": {
     "@emurgo/cardano-serialization-lib-asmjs":"^9.1.1",
-    "buffer":"^6.0.3",
-    "axios":"^0.24.0"
+    "axios":"^0.24.0",
+    "buffer":"^6.0.3"
   }
 }

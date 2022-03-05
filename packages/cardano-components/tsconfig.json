@@ -4,6 +4,7 @@
   "compilerOptions": {
     "experimentalDecorators": true,
     "declaration": true,
+    "useDefineForClassFields": false,
     "plugins": [
       {
         "name": "ts-lit-plugin"

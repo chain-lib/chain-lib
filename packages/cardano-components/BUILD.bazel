@@ -1,7 +1,6 @@
 load("@build_bazel_rules_nodejs//:index.bzl", "pkg_npm")
-load("@dependencies//@bazel/esbuild:index.bzl", "esbuild", "esbuild_config")
-load("@dependencies//@bazel/typescript:index.bzl", "ts_config", "ts_project")
-load("@dependencies//http-server:index.bzl", "http_server")
+load("@npm//@bazel/typescript:index.bzl", "ts_config", "ts_project")
+load("@npm//webpack-cli:index.bzl", webpack = "webpack_cli")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -24,62 +23,46 @@ ts_project(
     tsconfig = "tsconfig_lib",
     deps = [
         "//packages/cardano-api:js_library",
-        "@dependencies//@emurgo/cardano-serialization-lib-browser",
-        "@dependencies//@lit-labs/react",
-        "@dependencies//@material/mwc-button",
-        "@dependencies//@types/react",
-        "@dependencies//axios",
-        "@dependencies//buffer",
-        "@dependencies//lit",
-        "@dependencies//lit-element",
-        "@dependencies//pwa-helpers",
-        "@dependencies//react",
-        "@dependencies//redux",
-        "@dependencies//redux-thunk",
-        "@dependencies//tslib",
+        "@npm//@emurgo/cardano-serialization-lib-browser",
+        "@npm//@lit-labs/react",
+        "@npm//@material/mwc-button",
+        "@npm//@material/mwc-menu",
+        "@npm//@types/react",
+        "@npm//axios",
+        "@npm//buffer",
+        "@npm//lit",
+        "@npm//lit-element",
+        "@npm//pwa-helpers",
+        "@npm//react",
+        "@npm//redux",
+        "@npm//redux-thunk",
+        "@npm//tslib",
     ],
 )
 
-esbuild_config(
-    name = "esbuildconfig",
-    config_file = "esbuild.config.js",
-    deps = [
-        "@dependencies//esbuild-node-externals"
+webpack(
+    name = "bundle",
+    args = [
+        "./$(execpath src/components/index.js)",
+        "./$(execpath src/react/index.js)",
+        "./$(execpath src/redux/index.js)",
+        "--config",
+        "$(execpath webpack.config.js)",
+        "-o",
+        "$(@D)",
+        "--mode",
+        "production",
     ],
-)
-
-esbuild(
-    name = "esm",
-    config = ":esbuildconfig",
-    entry_points = [
-        "src/components/index.ts",
-        "src/react/index.ts",
-        "src/redux/index.ts",
-    ],
-    format = "esm",
-    output_dir = True,
-    splitting = True,
-    target = "es2017",
-    deps = [
+    data = [
+        "src/components/index.js",
+        "src/react/index.js",
+        "src/redux/index.js",
+        "webpack.config.js",
         ":build",
-        ":esbuildconfig"
+        "//packages/cardano-api:js_library",
+        "@npm//:node_modules",
     ],
-)
-
-esbuild(
-    name = "cjs",
-    config = ":esbuildconfig",
-    entry_points = [
-        "src/components/index.ts",
-        "src/react/index.ts",
-        "src/redux/index.ts",
-    ],
-    format = "cjs",
     output_dir = True,
-    splitting = True,
-    deps = [
-        ":build"
-    ],
 )
 
 pkg_npm(
@@ -89,17 +72,15 @@ pkg_npm(
         "README.md",
         "package.json",
     ],
+    substitutions = {
+        "0.0.0-PLACEHOLDER": "{STABLE_VERSION_NUMBER}",
+        "CHAIN-LIB-CARDANO-API-0.0.0": "{CHAIN_LIB_CARDANO_API}",
+    },
     tgz = "chain-lib-cardano-components.tgz",
     validate = True,
     deps = [
         "README.md",
         ":build",
-        ":cjs",
-        ":esm",
+        ":bundle",
     ],
-)
-
-http_server(
-    name = "server",
-    data = [":package"],
 )

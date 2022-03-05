@@ -3,35 +3,30 @@ import type {
     TransactionUnspentOutput, 
     BaseAddress, 
     RewardAddress, 
-    Transaction} from '@emurgo/Cardano-serialization-lib-asmjs';
+    Transaction} from '@emurgo/cardano-serialization-lib-asmjs';
 import { CardanoAPIObject, errorIfUndefined } from './CardanoAPI';
 
 export const Commands = {
 
     isEnabled : async() : Promise<Boolean> => {
         try {
-            const wallet = await CardanoAPIObject.wallet;
-            return await wallet.isEnabled();
+            return await CardanoAPIObject.wallet.isEnabled();
         } 
         catch (e) {
             return false;
         }   
     },
-    enable : async() : Promise<Boolean> => {
+    enable : async() : Promise<Boolean | Object> => {
         try {
-            const wallet = await CardanoAPIObject.wallet;
-            console.log(wallet);
-            return await wallet.enable();
+            const value = await CardanoAPIObject.wallet.enable();
+            return value;
         } 
         catch (e) {
-            console.log(CardanoAPIObject.wallet);
-            console.error(e);
             return false;
         }   
     },
     getUnusedAddresses : async (type? : string) : Promise<Array<string>> => {
-        const wallet = await CardanoAPIObject.wallet;
-        const addr = await wallet.getUnusedAddresses();
+        const addr = await CardanoAPIObject.wallet.getUnusedAddresses();
         if(type === CardanoAPIObject.addressReturnType.hex){
             return addr;
         }
@@ -43,8 +38,7 @@ export const Commands = {
         return addr;
     },
     getUsedAddresses : async (type? : string) : Promise<Array<string>> => {
-        const wallet = await CardanoAPIObject.wallet;
-        const addr = await wallet.getUsedAddresses();
+        const addr = await CardanoAPIObject.wallet.getUsedAddresses();
         if(type === CardanoAPIObject.addressReturnType.hex){
             return addr;
         }
@@ -56,8 +50,7 @@ export const Commands = {
         return addr;
     },
     getChangeAddress : async (type? : string) : Promise<string> => {
-        const wallet = await CardanoAPIObject.wallet;
-        const addr = await wallet.getChangeAddress();
+        const addr = await CardanoAPIObject.wallet.getChangeAddress();
         if(type === CardanoAPIObject.addressReturnType.hex){
             return addr;
         }
@@ -66,22 +59,22 @@ export const Commands = {
         }
         return addr;
     },
-    getRewardAddress : async (type? : string) : Promise<string> => {
-        const wallet = await CardanoAPIObject.wallet;
-        const addr = await wallet.getRewardAddress();
+    getRewardAddresses : async (type? : string) : Promise<Array<string>> => {
+        const addr = await CardanoAPIObject.wallet.getRewardAddresses();
         if(type === CardanoAPIObject.addressReturnType.hex){
             return addr;
         }
         if(type === CardanoAPIObject.addressReturnType.bech32){
-            return bech32FromHex(addr);
+            const bechAddr : Array<string> = [];
+            addr.forEach((address : string)=>bechAddr.push(bech32FromHex(address)));
+            return bechAddr;
         }
         return addr;
     },
     getUtxos : async(amount? : Value,  paginate?: {page: number ; limit: number} ) : 
     Promise<Array<TransactionUnspentOutput>> => {
-        const wallet = await CardanoAPIObject.wallet;
         const utxos : Array<string> = errorIfUndefined(
-            await wallet.getUtxos(amount,paginate));
+            await CardanoAPIObject.wallet.getUtxos(amount,paginate));
         
         const fixedUtxos = utxos.map((utxo : string) =>
         CardanoAPIObject.serializationLib.TransactionUnspentOutput.from_bytes(
@@ -91,36 +84,30 @@ export const Commands = {
         return fixedUtxos;
     },
     getCollateral : async() : Promise<TransactionUnspentOutput> => {
-        const wallet = await CardanoAPIObject.wallet;
-        return await wallet.getCollateral();
+        return await CardanoAPIObject.wallet.getCollateral();
     },
     getBalance : async() : Promise<Value> => {
-        const wallet = await CardanoAPIObject.wallet;
-        return await wallet.getBalance();
+        return await CardanoAPIObject.wallet.getBalance();
     },
     getNetworkId : async() : Promise<number> => {
-        const wallet = await CardanoAPIObject.wallet;
-        return await wallet.getNetworkId();
+        return await CardanoAPIObject.wallet.getNetworkId();
     },
     signData : async(address : BaseAddress | RewardAddress, payload : string) : Promise<any> => { 
-        const wallet = await CardanoAPIObject.wallet;
-        return wallet.signData(address,payload);
+        return await CardanoAPIObject.wallet.signData(address,payload);
     }, 
     signTx : async(tx: Transaction | string, partialSign?: boolean) : Promise<string> => {
-        const wallet = await CardanoAPIObject.wallet;
         let transaction = tx;
         if(typeof tx !== 'string'){
             transaction = CardanoAPIObject.buffer.from(tx.to_bytes()).toString('hex');
         }
-        return await wallet.signTx(transaction, partialSign);
+        return await CardanoAPIObject.wallet.signTx(transaction, partialSign);
     },
     submitTx : async(tx : Transaction | string) : Promise<any> => {
-        const wallet = await CardanoAPIObject.wallet;
         let transaction = tx;
         if(typeof tx !== 'string'){
             transaction = CardanoAPIObject.buffer.from(tx.to_bytes()).toString('hex');
         }
-        const submit = await wallet.submitTx(transaction);
+        const submit = await CardanoAPIObject.wallet.submitTx(transaction);
         return submit;
     },
   };

@@ -1,5 +1,5 @@
 import { TransactionOutputs, TransactionUnspentOutput, Value } from '@emurgo/cardano-serialization-lib-asmjs';
-import { CardanoAPIObject, errorIfUndefined } from './CardanoAPI';
+import { CardanoAPIObject, errorIfUndefined } from '../CardanoAPI';
 
 type AmountList = Array<Value>;
 export type UTxOList = Array<TransactionUnspentOutput>;

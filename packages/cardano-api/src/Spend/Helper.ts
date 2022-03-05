@@ -1,14 +1,8 @@
 import type {
     MultiAsset, 
-    TransactionOutputs} from '@emurgo/Cardano-serialization-lib-asmjs';
-import { CardanoAPIObject} from './CardanoAPI';
+    TransactionOutputs} from '@emurgo/cardano-serialization-lib-asmjs';
+import { CardanoAPIObject, errorIfUndefined} from '../CardanoAPI';
 import { setProtocolParameters, randomImprove, UTxOList } from './SelectCoin';
-
-type Delegate = {
-    stakepoolId: string;
-    metadata?: Metadata;
-    metadataLabel?: string;
-};
 
 type Metadata = object | null;
 
@@ -29,195 +23,7 @@ type ProtocolParameter = {
     slot: string; 
 }
 
-type Send = {
-    address: string; 
-    amount?: number; 
-    assets?: Asset[];
-    metadata?: Metadata;
-    metadataLabel?: string;
-}
-
-type SendMultiple = {
-    recipients: {
-        address: string; 
-        amount?: number; 
-        assets?: Asset[];
-    }[];
-    metadata?: Metadata;
-    metadataLabel?: string;
-}
-
-export const Spend = () => {
-    return {
-        name : 'spend',
-        exec : {
-            send : send,
-            sendMultiple : sendMultiple,
-            delegate : delegate
-        }   
-    };
-};
-
-const errorIfUndefined = <T>(item : T | undefined) : T => {
-    if(!item){
-        throw new Error('Value is undefined');
-    }
-    return item;
-};
-
-const send = async({address, amount = 0, assets = [], metadata = null, metadataLabel = '721'} : Send) : 
-Promise<string> => {
-    const paymentAddress = 
-    await CardanoAPIObject.baseCommands.getChangeAddress(CardanoAPIObject.addressReturnType.bech32);
-    const protocolParameter = await getProtocolParameter();
-    const utxos = (await CardanoAPIObject.baseCommands.getUtxos());
-    const lovelace = Math.floor((amount || 0) * 1000000).toString();
-    const receiveAddress = address;
-    const multiAsset = _makeMultiAsset(assets);
-    const outputValue = CardanoAPIObject.serializationLib.Value.new(
-        CardanoAPIObject.serializationLib.BigNum.from_str(lovelace)
-    );
-    if((assets || []).length > 0){
-        outputValue.set_multiasset(multiAsset);
-    }
-    const minAda = CardanoAPIObject.serializationLib.min_ada_required(
-        outputValue, 
-        CardanoAPIObject.serializationLib.BigNum.from_str(protocolParameter.minUtxo || '1000000')
-    );
-    if(CardanoAPIObject.serializationLib.BigNum.from_str(lovelace).compare(minAda) < 0){
-            outputValue.set_coin(minAda);
-    }
-    const outputs = CardanoAPIObject.serializationLib.TransactionOutputs.new();
-    outputs.add(
-        CardanoAPIObject.serializationLib.TransactionOutput.new(
-            CardanoAPIObject.serializationLib.Address.from_bech32(receiveAddress),
-            outputValue
-        )
-    );
-    const rawTransaction = _txBuilder({
-        PaymentAddress: String(paymentAddress),
-        Utxos: utxos,
-        Outputs: outputs,
-        ProtocolParameter: protocolParameter,
-        Metadata: metadata,
-        MetadataLabel: metadataLabel,
-        Delegation: null
-    });
-    return await _signSubmitTx(rawTransaction);
-};
-
-const sendMultiple = async ({recipients = [], metadata = null, metadataLabel = '721'}: SendMultiple) : 
-Promise<string> => {
-    const paymentAddress = await CardanoAPIObject.baseCommands.getChangeAddress(
-        CardanoAPIObject.addressReturnType.bech32);
-
-    const protocolParameter = await getProtocolParameter();
-    const utxos = (await CardanoAPIObject.baseCommands.getUtxos());
-    const outputs = CardanoAPIObject.serializationLib.TransactionOutputs.new();
-    for (const recipient of recipients){
-        const lovelace = Math.floor((recipient.amount || 0) * 1000000).toString();
-        const receiveAddress = recipient.address;
-        const multiAsset = _makeMultiAsset(recipient.assets || []);
-        const outputValue = CardanoAPIObject.serializationLib.Value.new(
-            CardanoAPIObject.serializationLib.BigNum.from_str(lovelace)
-        );
-        if((recipient.assets || []).length > 0){
-            outputValue.set_multiasset(multiAsset);
-        } 
-        const minAda = CardanoAPIObject.serializationLib.min_ada_required(
-            outputValue, 
-            CardanoAPIObject.serializationLib.BigNum.from_str(protocolParameter.minUtxo || '1000000')
-        );
-        if(CardanoAPIObject.serializationLib.BigNum.from_str(lovelace).compare(minAda) < 0){
-                outputValue.set_coin(minAda);
-        }
-        outputs.add(
-            CardanoAPIObject.serializationLib.TransactionOutput.new(
-                CardanoAPIObject.serializationLib.Address.from_bech32(receiveAddress),
-                outputValue
-            )
-        );
-    }
- 
-    const RawTransaction = _txBuilder({
-        PaymentAddress: String(paymentAddress),
-        Utxos: utxos,
-        Outputs: outputs,
-        ProtocolParameter: protocolParameter,
-        Metadata: metadata,
-        MetadataLabel: metadataLabel,
-        Delegation: null
-    });
-
-    return await _signSubmitTx(RawTransaction);
-};
-
-const delegate = async({stakepoolId, metadata = null, metadataLabel = '721'} : Delegate) : Promise<string> => {
-    const protocolParameter = await getProtocolParameter();
-    const stakeAddress = await CardanoAPIObject.baseCommands.getRewardAddress(
-        CardanoAPIObject.addressReturnType.bech32);
-
-    const stakeKeyHash = errorIfUndefined(errorIfUndefined(
-        CardanoAPIObject.serializationLib.RewardAddress.from_address(
-            errorIfUndefined(CardanoAPIObject.serializationLib.Address.from_bech32(
-                String(stakeAddress)
-            )
-        ))
-    ).payment_cred().to_keyhash()).to_bytes();
-
-    const getDelegation = async(rewardAddr: string) : 
-    Promise<{active : boolean;rewards : string;stakepoolId : string }> => {
-        //@ts-ignore
-        const stake = await CardanoAPIObject.plugins.data.request(`/accounts/${rewardAddr}`); 
-        if(!stake || stake.data.error || !stake.data.pool_id) throw new Error('Blockfrost data retreived is incorrect');
-        return {
-            active: stake.data.active,
-            rewards: stake.data.withdrawable_amount,
-            stakepoolId: stake.data.pool_id,
-        };
-    };
-
-    const delegation = await getDelegation(String(stakeAddress));
-    //@ts-ignore
-    const pool = await CardanoAPIObject.plugins.data.request(`/pools/${stakepoolId}`);
-    const poolHex = pool.data.hex;
-
-    const utxos = await CardanoAPIObject.baseCommands.getUtxos();
-    
-    const paymentAddress = await CardanoAPIObject.baseCommands.getChangeAddress(
-        CardanoAPIObject.addressReturnType.bech32);
-
-    const outputs = CardanoAPIObject.serializationLib.TransactionOutputs.new();
-
-    const addr = CardanoAPIObject.serializationLib.Address.from_bech32((String(paymentAddress)));
-    const value = CardanoAPIObject.serializationLib.Value.new(
-        CardanoAPIObject.serializationLib.BigNum.from_str(protocolParameter.keyDeposit)
-    );
-    outputs.add(
-        CardanoAPIObject.serializationLib.TransactionOutput.new(
-          addr,
-          value
-        )
-    );
-
-    const RawTransaction = _txBuilder({
-        PaymentAddress: String(paymentAddress),
-        Utxos: utxos,
-        ProtocolParameter: protocolParameter,
-        Outputs: outputs,
-        Delegation: {
-            poolHex: poolHex,
-            stakeKeyHash: stakeKeyHash,
-            delegation: delegation
-        },
-        Metadata: metadata,
-        MetadataLabel: metadataLabel
-    });
-
-    return await _signSubmitTx(RawTransaction);
-};
-
-const _txBuilder = ({
+export const _txBuilder = ({
     PaymentAddress, 
     Utxos, 
     Outputs, 
@@ -399,7 +205,7 @@ const _txBuilder = ({
     return transaction.to_bytes();
 };
 
-const _makeMultiAsset = (assets : Asset[]) : MultiAsset =>{
+export const _makeMultiAsset = (assets : Asset[]) : MultiAsset =>{
     const AssetsMap : any = {};
     for(const asset of assets){
         const [policy, assetName] = asset.unit.split('.');
@@ -433,7 +239,7 @@ const _makeMultiAsset = (assets : Asset[]) : MultiAsset =>{
     return multiAsset;
 };
 
-const _signSubmitTx = async(transactionRaw : Uint8Array) : Promise<string> => {
+export const _signSubmitTx = async(transactionRaw : Uint8Array) : Promise<string> => {
     const transaction = CardanoAPIObject.serializationLib.Transaction.from_bytes(transactionRaw);
     const witneses = await CardanoAPIObject.baseCommands.signTx(
             transaction
@@ -457,26 +263,23 @@ const _signSubmitTx = async(transactionRaw : Uint8Array) : Promise<string> => {
         signedTx
     );
 };
-const getProtocolParameter = async() => {
-    //@ts-ignore
-    const latestBlock = await CardanoAPIObject.plugins.data.request('/blocks/latest');
+
+export const getProtocolParameter = async() : Promise<ProtocolParameter>=> {
+    const latestBlock = await CardanoAPIObject.onchainData.getLatestBlock()
     if(!latestBlock) throw 'invalid protocal parameters';
-    //@ts-ignore
-    const p = await CardanoAPIObject.plugins.data.request(
-        `/epochs/${latestBlock.data.epoch}/parameters`);
+    const p = await CardanoAPIObject.onchainData.getParameters(latestBlock.epoch)
     if(!p) throw 'invalid protocal parameters';
 
     const parameters = {
         linearFee: {
-          minFeeA: p.data.min_fee_a.toString(),
-          minFeeB: p.data.min_fee_b.toString(),
+          minFeeA: p.minFeeA.toString(),
+          minFeeB: p.minFeeB.toString(),
         },
         minUtxo: '1000000',
-        poolDeposit: p.data.pool_deposit,
-        keyDeposit: p.data.key_deposit,
-        maxTxSize: p.data.max_tx_size, 
-        slot: latestBlock.data.slot,
+        poolDeposit: p.poolDeposit,
+        keyDeposit: p.keyDeposit,
+        maxTxSize: p.maxTxSize, 
+        slot: String(latestBlock.slot),
       };
     return parameters;    
 };
-

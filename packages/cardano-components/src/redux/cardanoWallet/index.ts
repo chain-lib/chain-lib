@@ -5,7 +5,8 @@ export const CARDANO_WALLET = {
     ADDRESSES: 'cardanoWallet/ADDRESSES',
     STAKE: 'cardanoWallet/STAKE',
     SEND: 'cardanoWallet/SEND',
+    INITALIZE: 'cardanoWallet/INITALIZEW'
 };
 
-export let API = CardanoAPI;
+export const API =  CardanoAPI
 
