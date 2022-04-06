@@ -8,5 +8,5 @@ export const CARDANO_WALLET = {
     INITALIZE: 'cardanoWallet/INITALIZEW'
 };
 
-export const API =  CardanoAPI
+export const API = CardanoAPI
 

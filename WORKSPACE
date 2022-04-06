@@ -28,3 +28,9 @@ yarn_install(
 load("@build_bazel_rules_nodejs//toolchains/esbuild:esbuild_repositories.bzl", "esbuild_repositories")
 
 esbuild_repositories(npm_repository = "npm")
+
+load("@bazel_distribution//github:deps.bzl", github_deps = "deps")
+github_deps()
+
+load("@bazel_skylib//:workspace.bzl", "bazel_skylib_workspace")
+bazel_skylib_workspace()

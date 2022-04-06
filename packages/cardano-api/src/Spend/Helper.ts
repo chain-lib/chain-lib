@@ -1,10 +1,31 @@
 import type {
     MultiAsset, 
-    TransactionOutputs} from '@emurgo/cardano-serialization-lib-asmjs';
-import { CardanoAPIObject, errorIfUndefined} from '../CardanoAPI';
+    TransactionOutputs
+} from '@emurgo/cardano-serialization-lib-asmjs';
+import { CardanoAPI, errorIfUndefined} from '../CardanoAPI';
 import { setProtocolParameters, randomImprove, UTxOList } from './SelectCoin';
 
 type Metadata = object | null;
+
+type txBuilder = {
+    PaymentAddress : string;
+    Utxos : UTxOList;
+    Outputs : TransactionOutputs;
+    ProtocolParameter : ProtocolParameter;
+    Metadata? : Metadata;
+    MetadataLabel?: string;
+    Delegation? : Delegation | null;
+}
+
+type Delegation = {
+    stakeKeyHash: Uint8Array;
+    poolHex: string;
+    delegation: {
+        active: boolean;
+        rewards: string;
+        stakepoolId: string;
+    };
+}
 
 type Asset = {
     unit: string;
@@ -23,30 +44,35 @@ type ProtocolParameter = {
     slot: string; 
 }
 
-export const _txBuilder = ({
-    PaymentAddress, 
-    Utxos, 
-    Outputs, 
-    ProtocolParameter, 
-    Metadata = null, 
-    MetadataLabel = '721', 
-    Delegation = null} : {
-    PaymentAddress : string;
-    Utxos : UTxOList;
-    Outputs : TransactionOutputs;
-    ProtocolParameter : ProtocolParameter;
-    Metadata? : Metadata;
-    MetadataLabel?: string;
-    Delegation? : {
-        stakeKeyHash: Uint8Array;
-        poolHex: string;
-        delegation: {
-            active: boolean;
-            rewards: string;
-            stakepoolId: string;
-        };
-    } | null;
-}) : Uint8Array => {
+/**
+ * This is a huge internal function that needs to be refactored, which takes inputs, and returns a transaction (Uint8Array)
+ *
+ * @param txBuilder All the information used to create a transaction.
+ * ```typescript
+ * {
+ *      PaymentAddress : String. BECH32 payment address,
+ *      Utxos : List of UTXOs in the serialization library type,
+ *      Outputs : Transaction Outputs,
+ *      ProtocolParameters : ProtocolParameters from getProtocolParameters(),
+ *      Metadata : Optional Object if you want to include metadata in your transaction,
+ *      MetadataLabel : Optional string label for the Metadata. Defaults to 721.
+ *      Delegation : Delegation | null. Used if you plan on delegating from the transaction.
+ * }
+ * 
+ * Delegation : {
+ *      stakeKeyHash: Uint8Array repsersentation of a wallets stake key.
+ *      poolHex: string. HEX repersentation of a stakepool
+ *      delegation: {
+ *          active: boolean. Wether the key is currently staking.
+ *          rewards: string. Current value in rewards.
+ *          stakepoolId: string. HEX or BECH32 stakepool ID.
+ *      }
+ * }
+ * ```
+ *
+ * @returns A Uint8Array transaction
+*/
+export const _txBuilder = ({PaymentAddress, Utxos, Outputs, ProtocolParameter, Metadata = null, MetadataLabel = '721', Delegation = null} : txBuilder) : Uint8Array => {
     const MULTIASSET_SIZE = 5000;
     const VALUE_SIZE = 5000;
     const totalAssets = 0;
@@ -64,14 +90,14 @@ export const _txBuilder = ({
 
     const inputs = selection.input;
 
-    const txBuilder = CardanoAPIObject.serializationLib.TransactionBuilder.new(
-        CardanoAPIObject.serializationLib.LinearFee.new(
-            CardanoAPIObject.serializationLib.BigNum.from_str(ProtocolParameter.linearFee.minFeeA),
-            CardanoAPIObject.serializationLib.BigNum.from_str(ProtocolParameter.linearFee.minFeeB)
+    const txBuilder = CardanoAPI.serializationLib.TransactionBuilder.new(
+        CardanoAPI.serializationLib.LinearFee.new(
+            CardanoAPI.serializationLib.BigNum.from_str(ProtocolParameter.linearFee.minFeeA),
+            CardanoAPI.serializationLib.BigNum.from_str(ProtocolParameter.linearFee.minFeeB)
         ),
-        CardanoAPIObject.serializationLib.BigNum.from_str(ProtocolParameter.minUtxo.toString()),
-        CardanoAPIObject.serializationLib.BigNum.from_str(ProtocolParameter.poolDeposit.toString()),
-        CardanoAPIObject.serializationLib.BigNum.from_str(ProtocolParameter.keyDeposit.toString()),
+        CardanoAPI.serializationLib.BigNum.from_str(ProtocolParameter.minUtxo.toString()),
+        CardanoAPI.serializationLib.BigNum.from_str(ProtocolParameter.poolDeposit.toString()),
+        CardanoAPI.serializationLib.BigNum.from_str(ProtocolParameter.keyDeposit.toString()),
         MULTIASSET_SIZE,
         MULTIASSET_SIZE
     );
@@ -86,13 +112,13 @@ export const _txBuilder = ({
     }
 
     if(Delegation){
-        const certificates = CardanoAPIObject.serializationLib.Certificates.new();
+        const certificates = CardanoAPI.serializationLib.Certificates.new();
         if (!Delegation.delegation.active){
             certificates.add(
-                CardanoAPIObject.serializationLib.Certificate.new_stake_registration(
-                    CardanoAPIObject.serializationLib.StakeRegistration.new(
-                        CardanoAPIObject.serializationLib.StakeCredential.from_keyhash(
-                            CardanoAPIObject.serializationLib.Ed25519KeyHash.from_bytes(
+                CardanoAPI.serializationLib.Certificate.new_stake_registration(
+                    CardanoAPI.serializationLib.StakeRegistration.new(
+                        CardanoAPI.serializationLib.StakeCredential.from_keyhash(
+                            CardanoAPI.serializationLib.Ed25519KeyHash.from_bytes(
                                 Delegation.stakeKeyHash
                             )
                         )
@@ -103,15 +129,15 @@ export const _txBuilder = ({
         const poolKeyHash = Delegation.poolHex;
    
         certificates.add(
-            CardanoAPIObject.serializationLib.Certificate.new_stake_delegation(
-                CardanoAPIObject.serializationLib.StakeDelegation.new(
-                    CardanoAPIObject.serializationLib.StakeCredential.from_keyhash(
-                        CardanoAPIObject.serializationLib.Ed25519KeyHash.from_bytes(
+            CardanoAPI.serializationLib.Certificate.new_stake_delegation(
+                CardanoAPI.serializationLib.StakeDelegation.new(
+                    CardanoAPI.serializationLib.StakeCredential.from_keyhash(
+                        CardanoAPI.serializationLib.Ed25519KeyHash.from_bytes(
                             Delegation.stakeKeyHash
                         )
                     ),
-                    CardanoAPIObject.serializationLib.Ed25519KeyHash.from_bytes(
-                        CardanoAPIObject.buffer.from(poolKeyHash, 'hex')
+                    CardanoAPI.serializationLib.Ed25519KeyHash.from_bytes(
+                        CardanoAPI.buffer.from(poolKeyHash, 'hex')
                     )
               )
             )
@@ -123,15 +149,15 @@ export const _txBuilder = ({
     let AUXILIARY_DATA;
 
     if(Metadata){
-        const METADATA = CardanoAPIObject.serializationLib.GeneralTransactionMetadata.new();
+        const METADATA = CardanoAPI.serializationLib.GeneralTransactionMetadata.new();
         METADATA.insert(
-            CardanoAPIObject.serializationLib.BigNum.from_str(MetadataLabel),
-            CardanoAPIObject.serializationLib.encode_json_str_to_metadatum(
+            CardanoAPI.serializationLib.BigNum.from_str(MetadataLabel),
+            CardanoAPI.serializationLib.encode_json_str_to_metadatum(
                 JSON.stringify(Metadata),
                 0
             )
         );
-        AUXILIARY_DATA = CardanoAPIObject.serializationLib.AuxiliaryData.new();
+        AUXILIARY_DATA = CardanoAPI.serializationLib.AuxiliaryData.new();
         AUXILIARY_DATA.set_metadata(METADATA);
         txBuilder.set_auxiliary_data(AUXILIARY_DATA);
     }
@@ -144,23 +170,23 @@ export const _txBuilder = ({
     const changeMultiAssets = change.multiasset();
     // check if change value is too big for single output
     if (changeMultiAssets && change.to_bytes().length * 2 > VALUE_SIZE) {
-        const partialChange = CardanoAPIObject.serializationLib.Value.new(
-            CardanoAPIObject.serializationLib.BigNum.from_str('0')
+        const partialChange = CardanoAPI.serializationLib.Value.new(
+            CardanoAPI.serializationLib.BigNum.from_str('0')
         );
-        const partialMultiAssets = CardanoAPIObject.serializationLib.MultiAsset.new();
+        const partialMultiAssets = CardanoAPI.serializationLib.MultiAsset.new();
         const policies = changeMultiAssets.keys();
         const makeSplit = () => {
             for (var j = 0; j < changeMultiAssets.len(); j++) {
                 const policy = policies.get(j);
                 const policyAssets = errorIfUndefined(changeMultiAssets.get(policy));
                 const assetNames = policyAssets.keys();
-                const assets = CardanoAPIObject.serializationLib.Assets.new();
+                const assets = CardanoAPI.serializationLib.Assets.new();
                 for (var k = 0; k < assetNames.len(); k++) {
                     const policyAsset = assetNames.get(k);
                     const quantity = errorIfUndefined(policyAssets.get(policyAsset));
                     assets.insert(policyAsset, quantity);
                     //check size
-                    const checkMultiAssets = CardanoAPIObject.serializationLib.MultiAsset.from_bytes(
+                    const checkMultiAssets = CardanoAPI.serializationLib.MultiAsset.from_bytes(
                     partialMultiAssets.to_bytes()
                     );
                     checkMultiAssets.insert(policy, assets);
@@ -175,25 +201,25 @@ export const _txBuilder = ({
 
         makeSplit();
         partialChange.set_multiasset(partialMultiAssets);
-        const minAda = CardanoAPIObject.serializationLib.min_ada_required(
+        const minAda = CardanoAPI.serializationLib.min_ada_required(
             partialChange,
             ProtocolParameter.minUtxo
         );
         partialChange.set_coin(minAda);
 
         txBuilder.add_output(
-            CardanoAPIObject.serializationLib.TransactionOutput.new(
-            CardanoAPIObject.serializationLib.Address.from_bech32(PaymentAddress),
+            CardanoAPI.serializationLib.TransactionOutput.new(
+            CardanoAPI.serializationLib.Address.from_bech32(PaymentAddress),
             partialChange
             )
         );
     }
     txBuilder.add_change_if_needed(
-        CardanoAPIObject.serializationLib.Address.from_bech32(PaymentAddress)
+        CardanoAPI.serializationLib.Address.from_bech32(PaymentAddress)
     );
-    const transaction = CardanoAPIObject.serializationLib.Transaction.new(
+    const transaction = CardanoAPI.serializationLib.Transaction.new(
         txBuilder.build(),
-        CardanoAPIObject.serializationLib.TransactionWitnessSet.new(),
+        CardanoAPI.serializationLib.TransactionWitnessSet.new(),
         AUXILIARY_DATA
     );
 
@@ -205,6 +231,13 @@ export const _txBuilder = ({
     return transaction.to_bytes();
 };
 
+/**
+ * Internal helper function that takes a human readable asset[] and returns a MultiAsset type.
+ *
+ * @param assets Asset[{unit : "policyId.assetName", quantity : number}] 
+ *
+ * @returns MultiAsset. This is an internal asset type used for creating transactions.
+*/
 export const _makeMultiAsset = (assets : Asset[]) : MultiAsset =>{
     const AssetsMap : any = {};
     for(const asset of assets){
@@ -214,24 +247,24 @@ export const _makeMultiAsset = (assets : Asset[]) : MultiAsset =>{
             AssetsMap[policy] = [];
         }
         AssetsMap[policy].push({
-            unit: CardanoAPIObject.buffer.from(assetName, 'ascii').toString('hex'), 
+            unit: CardanoAPI.buffer.from(assetName, 'ascii').toString('hex'), 
             quantity: quantity
         });
         
     }
-    const multiAsset = CardanoAPIObject.serializationLib.MultiAsset.new();
+    const multiAsset = CardanoAPI.serializationLib.MultiAsset.new();
     for(const policy in AssetsMap){
-        const ScriptHash = CardanoAPIObject.serializationLib.ScriptHash.from_bytes(
-            CardanoAPIObject.buffer.from(policy,'hex')
+        const ScriptHash = CardanoAPI.serializationLib.ScriptHash.from_bytes(
+            CardanoAPI.buffer.from(policy,'hex')
         );
-        const Assets = CardanoAPIObject.serializationLib.Assets.new();
+        const Assets = CardanoAPI.serializationLib.Assets.new();
         
         const _assets = AssetsMap[policy];
 
         for(const asset of _assets){
-            const AssetName = CardanoAPIObject.serializationLib.AssetName.new(
-                CardanoAPIObject.buffer.from(asset.unit,'hex'));
-            const BigNum = CardanoAPIObject.serializationLib.BigNum.from_str(String(asset.quantity));
+            const AssetName = CardanoAPI.serializationLib.AssetName.new(
+                CardanoAPI.buffer.from(asset.unit,'hex'));
+            const BigNum = CardanoAPI.serializationLib.BigNum.from_str(String(asset.quantity));
             Assets.insert(AssetName, BigNum);  
         }
         multiAsset.insert(ScriptHash, Assets);
@@ -239,18 +272,25 @@ export const _makeMultiAsset = (assets : Asset[]) : MultiAsset =>{
     return multiAsset;
 };
 
+/**
+ * Internal helper function that takes a Uint8Array raw transaction, signs it, and submits it to the cardano blockchain.
+ *
+ * @param transactionRaw Uint8Array. This takes a raw transaction that has been built.
+ *
+ * @returns Promise<string> Returns the transaction hex.
+*/
 export const _signSubmitTx = async(transactionRaw : Uint8Array) : Promise<string> => {
-    const transaction = CardanoAPIObject.serializationLib.Transaction.from_bytes(transactionRaw);
-    const witneses = await CardanoAPIObject.baseCommands.signTx(
+    const transaction = CardanoAPI.serializationLib.Transaction.from_bytes(transactionRaw);
+    const witneses = await CardanoAPI.baseCommands.signTx(
             transaction
     );
-    const TransactionWitness = CardanoAPIObject.serializationLib.TransactionWitnessSet.from_bytes(
-        CardanoAPIObject.buffer.from(
+    const TransactionWitness = CardanoAPI.serializationLib.TransactionWitnessSet.from_bytes(
+        CardanoAPI.buffer.from(
             witneses,
             'hex'
         )
     );
-    const signedTx = CardanoAPIObject.serializationLib.Transaction.new(
+    const signedTx = CardanoAPI.serializationLib.Transaction.new(
         transaction.body(), 
         TransactionWitness,
         transaction.auxiliary_data()
@@ -259,15 +299,20 @@ export const _signSubmitTx = async(transactionRaw : Uint8Array) : Promise<string
         throw new Error('signedTx can not be a hex string');
     }
     
-    return await CardanoAPIObject.baseCommands.submitTx(
+    return await CardanoAPI.baseCommands.submitTx(
         signedTx
     );
 };
 
+/**
+ * Internal helper function that gets the current protocol parameters.
+ *
+ * @returns Promise<ProtocolParameter>. Returns a subset of the protocol parameters, necessary to calculate fees.
+*/
 export const getProtocolParameter = async() : Promise<ProtocolParameter>=> {
-    const latestBlock = await CardanoAPIObject.onchainData.getLatestBlock()
+    const latestBlock = await CardanoAPI.onchainData.getLatestBlock()
     if(!latestBlock) throw 'invalid protocal parameters';
-    const p = await CardanoAPIObject.onchainData.getParameters(latestBlock.epoch)
+    const p = await CardanoAPI.onchainData.getParameters(latestBlock.epoch)
     if(!p) throw 'invalid protocal parameters';
 
     const parameters = {

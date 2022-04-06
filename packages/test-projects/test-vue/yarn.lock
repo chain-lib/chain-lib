@@ -908,10 +908,17 @@
     "@babel/types" "^7.4.4"
     esutils "^2.0.2"
 
-"@babel/runtime@^7.12.13", "@babel/runtime@^7.8.4", "@babel/runtime@^7.9.2":
+"@babel/runtime@^7.12.13", "@babel/runtime@^7.8.4":
   version "7.17.2"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.17.2.tgz#66f68591605e59da47523c631416b18508779941"
   integrity sha512-hzeyJyMA1YGdJTuWU0e/j4wKXrU4OMFvY2MSlaI9B7VQb0r5cxTE3EAIS2Q7Tn2RIcDkRvTA/v2JsAEhxe99uw==
+  dependencies:
+    regenerator-runtime "^0.13.4"
+
+"@babel/runtime@^7.9.2":
+  version "7.17.8"
+  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.17.8.tgz#3e56e4aff81befa55ac3ac6a0967349fd1c5bca2"
+  integrity sha512-dQpEpK0O9o6lj6oPu0gRDbbnk+4LeHlNcBpspf6Olzt3GIX4P1lWF1gS+pHLDFlaJvbR6q7jCfQ08zA4QJBnmA==
   dependencies:
     regenerator-runtime "^0.13.4"
 
@@ -948,19 +955,19 @@
     "@babel/helper-validator-identifier" "^7.16.7"
     to-fast-properties "^2.0.0"
 
-"@chain-lib/cardano-api@file:../../../chain-lib-cardano-api-10915.81.34.tgz":
-  version "10915.81.34"
-  resolved "file:../../../chain-lib-cardano-api-10915.81.34.tgz#a9fbf7c895a986cc055e3a34aec24d5d08be057f"
+"@chain-lib/cardano-api@file:../../../chain-lib-cardano-api-18831.26.89.tgz":
+  version "18831.26.89"
+  resolved "file:../../../chain-lib-cardano-api-18831.26.89.tgz#7fc21b81473b45f88ec2ed042a94f2900087b345"
   dependencies:
     "@emurgo/cardano-serialization-lib-asmjs" "^9.1.1"
     axios "^0.24.0"
     buffer "^6.0.3"
 
-"@chain-lib/cardano-components@file:../../../chain-lib-cardano-components-10915.81.34.tgz":
-  version "10915.81.34"
-  resolved "file:../../../chain-lib-cardano-components-10915.81.34.tgz#d656675b0cd1e4a8cfc9b77d5b6e668be837aec0"
+"@chain-lib/cardano-components@file:../../../chain-lib-cardano-components-18831.26.89.tgz":
+  version "18831.26.89"
+  resolved "file:../../../chain-lib-cardano-components-18831.26.89.tgz#577c181e32b997bb6f0fea4dc560a0f00be168dd"
   dependencies:
-    "@chain-lib/cardano-api" "file:../../../chain-lib-cardano-api-10915.81.34.tgz"
+    "@chain-lib/cardano-api" "file:../../../chain-lib-cardano-api-18831.26.89.tgz"
     "@emurgo/cardano-serialization-lib-browser" "^9.1.1"
     "@lit-labs/react" "^1.0.1"
     "@material/mwc-button" "^0.25.1"
@@ -1520,9 +1527,9 @@
   integrity sha512-EEhsLsD6UsDM1yFhAvy0Cjr6VwmpMWqFBCb9w07wVugF7w9nfajxLuVmngTIpgS6svCnm6Vaw+MZhoDCKnOfsw==
 
 "@types/react@^17.0.2":
-  version "17.0.39"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-17.0.39.tgz#d0f4cde092502a6db00a1cded6e6bf2abb7633ce"
-  integrity sha512-UVavlfAxDd/AgAacMa60Azl7ygyQNRwC/DsHZmKgNvPmRR5p70AJ5Q9EAmL2NWOJmeV+vVUI4IAP7GZrN8h8Ug==
+  version "17.0.43"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-17.0.43.tgz#4adc142887dd4a2601ce730bc56c3436fdb07a55"
+  integrity sha512-8Q+LNpdxf057brvPu1lMtC5Vn7J119xrP1aq4qiaefNioQUYANF/CYeK4NsKorSZyUGJ66g0IM+4bbjwx45o2A==
   dependencies:
     "@types/prop-types" "*"
     "@types/scheduler" "*"
@@ -4331,10 +4338,19 @@ lit-html@^2.2.0:
   dependencies:
     "@types/trusted-types" "^2.0.2"
 
-lit@^2.0.0, lit@^2.0.2:
+lit@^2.0.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/lit/-/lit-2.2.0.tgz#1b83a2c1e4c5ecf3be785292b1a13e193597f610"
   integrity sha512-FDyxUuczo6cJJY/2Bkgfh1872U4ikUvmK1Cb6+lYC1CW+QOo8CaWXCpvPKFzYsz0ojUxoruBLVrECc7VI2f1dQ==
+  dependencies:
+    "@lit/reactive-element" "^1.3.0"
+    lit-element "^3.2.0"
+    lit-html "^2.2.0"
+
+lit@^2.0.2:
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/lit/-/lit-2.2.1.tgz#4b679e1d8cb6c7977b64921b1ea3eca7850ca1dd"
+  integrity sha512-dSe++R50JqrvNGXmI9OE13de1z5U/Y3J2dTm/9GC86vedI8ILoR8ZGnxfThFpvQ9m0lR0qRnIR4IiKj/jDCfYw==
   dependencies:
     "@lit/reactive-element" "^1.3.0"
     lit-element "^3.2.0"

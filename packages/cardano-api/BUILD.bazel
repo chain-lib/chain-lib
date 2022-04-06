@@ -1,8 +1,81 @@
 load("@build_bazel_rules_nodejs//:index.bzl", "js_library", "pkg_npm")
 load("@npm//@bazel/typescript:index.bzl", "ts_config", "ts_project")
 load("@npm//webpack-cli:index.bzl", webpack = "webpack_cli")
+load("@npm//typedoc:index.bzl", typedoc = "typedoc")
+load("@npm//http-server:index.bzl", "http_server")
+
+load("@bazel_distribution//github:rules.bzl","deploy_github")
+load("@bazel_distribution//npm:rules.bzl","assemble_npm","deploy_npm")
+
+load("@bazel_skylib//rules:write_file.bzl","write_file")
 
 package(default_visibility = ["//visibility:public"])
+
+typedoc(
+    name = "documentation",
+    args = [
+            "--out",
+            "$(@D)",
+            "--entryPointStrategy",
+            "expand",
+            "./$(rootpath tsconfig.json)",
+            "tsconfig.json",
+            "--githubPages",
+            "false",
+            "--emit",
+            "both",
+            "./$(rootpath src/CardanoAPI.ts)",
+            "./$(rootpath src/Spend/Send.ts)",
+            "./$(rootpath src/Commands.ts)",
+            "./$(rootpath src/DetectCardanoLoad.ts)",
+            "./$(rootpath src/OnchainData/AbstractOnchainData.ts)",
+            "./$(rootpath src/OnchainData/Blockfrost.ts)",
+           ],
+    data = glob(["src/**/*.ts"]) + [
+        "//:tsconfig.json",
+        "tsconfig.json",
+        "README.md",
+        "package.json",
+        "@npm//:node_modules"
+    ],
+    output_dir = True,
+    tags = ["documentation"]
+)
+
+http_server(
+    name = "serve_documentation",
+    data = [
+        ":documentation"
+    ],
+    args = ["."],
+    tags = ["documentation","local"]
+)
+
+write_file(
+    name = "version_file",
+    out = "version_file.txt",
+    content = ["{STABLE_VERSION_NUMBER}"],
+    tags = ["documentation","production"]
+)
+
+write_file(
+    name = "description_file",
+    out = "description.txt",
+    content = ["Updated documentation for {STABLE_VERSION_NUMBER}"],
+    tags = ["documentation","production"]
+)
+
+deploy_github(
+    name = "deploy_documentation",
+    archive = ":documentation",
+    organisation = "chain-lib",
+    release_description = ":description_file",
+    draft = True,
+    repository = "cardano-api",
+    title = "{STABLE_VERSION_NUMBER}",
+    tags = ["documentation","production"],
+    version_file = ":version_file"
+)
 
 ts_config(
     name = "tsconfig_lib",

@@ -8,8 +8,8 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
-    "@chain-lib/cardano-api": "file:../../../chain-lib-cardano-api-10915.81.34.tgz",
-    "@chain-lib/cardano-components": "file:../../../chain-lib-cardano-components-10915.81.34.tgz",
+    "@chain-lib/cardano-api": "file:../../../chain-lib-cardano-api-18831.26.89.tgz",
+    "@chain-lib/cardano-components": "file:../../../chain-lib-cardano-components-18831.26.89.tgz",
     "@emurgo/cardano-serialization-lib-browser": "^10.0.4",
     "@material/mwc-menu": "^0.25.3",
     "core-js": "^3.8.3",

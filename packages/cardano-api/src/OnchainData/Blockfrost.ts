@@ -1,5 +1,5 @@
 import { abstractOnchainData } from "./AbstractOnchainData";
-import { CardanoAPIObject } from "../CardanoAPI";
+import { CardanoAPI } from "../CardanoAPI";
 import axios from 'axios';
 
 type BlockfrostConfig = {
@@ -7,6 +7,24 @@ type BlockfrostConfig = {
     testnet? : string
 }
 
+/**
+ * This function takes a config file and returns an extension of the abstractOnchainData class
+ *
+ * @param config - {mainnet? : string, testnet? : string}
+ * This requires either a mainnet or a testnet (or both) config file. It is not safe to store api keys not encrypted in the front end. 
+ * Please do your due diligence and do not store secretes insecurely.
+ * 
+ * @example
+ * ```typescript
+ * Blockfrost({
+ *  mainnet : "key",
+ *  testnet : "key"
+ * })
+ * ```
+ *
+ * @returns abstractOnchainData class
+ *
+*/
 export const Blockfrost = (config : BlockfrostConfig) : abstractOnchainData => {
     if(!config){
         throw new Error('You must have a config file with either mainnet or testnet for this to work');
@@ -18,11 +36,20 @@ export const Blockfrost = (config : BlockfrostConfig) : abstractOnchainData => {
     throw new Error('Your blockfrost config must include mainnet or testnet.')
 }
 
-class blockfrost extends abstractOnchainData{
+/**
+ * This is an abstractOnchainData class, utilizing blockfrost to get its onchain data.
+ * @remarks
+ *
+ *
+ * @example
+ * ```typescript
+ *    blockfrost({mainnet : "key", testnet : "key"})
+ * ```
+ */
+class blockfrost implements abstractOnchainData{
     mainnet : BlockFrostAPI | undefined
     testnet : BlockFrostAPI | undefined
     constructor(config : BlockfrostConfig){
-        super()
         if(config.mainnet){
             this.mainnet = new BlockFrostAPI(
                 config.mainnet, 'cardano-mainnet'
@@ -33,9 +60,9 @@ class blockfrost extends abstractOnchainData{
         }
         
     }
-    async getDelegation(rewardAddress: string): Promise<{ active: boolean; rewards: string; stakepoolId: string; }> {
+    async getDelegation(stakeAddress: string): Promise<{ active: boolean; rewards: string; stakepoolId: string; }> {
         const api = await this.getCorrectBlockfrostAPI()
-        const stake = await api.accounts(rewardAddress)
+        const stake = await api.accounts(stakeAddress)
         if(!stake) throw new Error('Blockfrost data retreived is incorrect');
         return {
             active: stake.active,
@@ -70,8 +97,8 @@ class blockfrost extends abstractOnchainData{
         return pool.hex;
     }
 
-    async getCorrectBlockfrostAPI(): Promise<BlockFrostAPI> {
-        const networkId = await CardanoAPIObject.baseCommands.getNetworkId()
+    private async getCorrectBlockfrostAPI(): Promise<BlockFrostAPI> {
+        const networkId = await CardanoAPI.baseCommands.getNetworkId()
         if(networkId === 0 && this.testnet){
             return this.testnet
         }
@@ -169,32 +196,61 @@ export interface StakeAccount {
     pool_id:             string;
 }
 
+/**
+ * This is an internal class that is responsible for querying the blockfrost api.
+ *
+ * @example
+ * ```typescript
+ *    BlockfrostAPI(apiKey : 'key', network : 'cardano-mainnet')
+ * ```
+ */
 class BlockFrostAPI{
     apiKey : string
     network : string
-    //cardano-mainnet
-    //cardano-testnet
-    //ipfs
     constructor(apiKey : string, network : string){
         this.apiKey = apiKey
         this.network = network
     }
+    /**
+     * This function get information about a stakepool by its HEX or BECH32 ID from the blockfrost endpoint.
+     *
+     * @param poolId - HEX/BECH32 stakepool id.
+     *
+     * @returns https://docs.blockfrost.io/#tag/Cardano-Pools/paths/~1pools~1{pool_id}/get
+    */
     async poolsById(poolId : string) : Promise<PoolsById>{
         return await this.blockfrostCommand(`pools/${poolId}`, 'get')
     }
+    /**
+     * This gets information about the parameters in a specific epoch from blockfrost.
+     *
+     * @param epoch - Number representing the wanted epoch
+     *
+     * @returns https://docs.blockfrost.io/#tag/Cardano-Epochs/paths/~1epochs~1{number}~1parameters/get
+    */
     async epochsParameters(epoch : number) : Promise<EpochParameters>{
         return await this.blockfrostCommand(`epochs/${epoch}/parameters`, 'get')
     }
-
+    /**
+     * This method gets the latest block from blockfrost and returns information about it
+     *
+     * @returns https://docs.blockfrost.io/#tag/Cardano-Blocks/paths/~1blocks~1latest/get
+    */
     async blocksLatest() : Promise<BlockLatest>{
         return await this.blockfrostCommand(`blocks/latest`, 'get')
     }
-
+    /**
+     * This gets information about a specific cardano account, specified by a stakepool address.
+     *
+     * @param stakeAddress - BECH32 stakepool address string (stake...)
+     *
+     * @returns https://docs.blockfrost.io/#tag/Cardano-Accounts/paths/~1accounts~1{stake_address}/get
+    */
     async accounts(stakeAddress : string): Promise<StakeAccount>{
         return await this.blockfrostCommand(`accounts/${stakeAddress}`, 'get')
     }
 
-    async blockfrostCommand(command : string, method : string){
+    private async blockfrostCommand(command : string, method : string){
         const url = `https://${this.network}.blockfrost.io/api/v0/${command}`
         const response = await axios.request({
             url : url,

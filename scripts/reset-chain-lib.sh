@@ -4,7 +4,7 @@ readonly ran2=$(shuf -i 0-100 -n1)
 readonly ran3=$(shuf -i 0-100 -n1)
 readonly ran="$ran1.$ran2.$ran3"
 readonly VERSION=${1:-$ran}
-readonly DEVELOPMENT=development
+readonly DEVELOPMENT=${2:-development}
 
 touch ./scripts/VERSION.txt
 > ./scripts/VERSION.txt
