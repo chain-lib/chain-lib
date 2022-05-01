@@ -33,7 +33,7 @@ await API.register({
 Due to how the serization libraries work, you currently need to compile your code to es2017, and you need a few special rules. Specifically you need topLevelAwait by default. If you use emurgos WASM library you need asyncWebAssembly. Their libraries only seem to work well natively, with webpack.
 
 ## Usage
-These commands are organized as follows. Remember API is the initalized object from earlier.
+These commands are organized as follows. Remember API is the initialized object from earlier.
 
 ### API
 ```javascript

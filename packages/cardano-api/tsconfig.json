@@ -1,4 +1,9 @@
 {
   "extends": "../../tsconfig.json",
   "include": ["./**/*.ts"],
+  "typedocOptions": {
+    "entryPoints": [
+        "src/**/*.ts"
+    ],
+  },
 }

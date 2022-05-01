@@ -5,10 +5,13 @@
     "experimentalDecorators": true,
     "declaration": true,
     "useDefineForClassFields": false,
+    "composite" : true,
+    "incremental" : true,
+    "resolveJsonModule" : true,
     "plugins": [
       {
         "name": "ts-lit-plugin"
       }
     ]
-  },
+  }
 }

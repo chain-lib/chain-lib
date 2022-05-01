@@ -6,3 +6,8 @@ ts_config(
     name = "tsconfig",
     src = "tsconfig.json",
 )
+
+filegroup(
+    name = "env",
+    srcs = [".env"],
+)

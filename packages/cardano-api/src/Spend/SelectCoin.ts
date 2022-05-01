@@ -1,5 +1,5 @@
 import { TransactionOutputs, TransactionUnspentOutput, Value } from '@emurgo/cardano-serialization-lib-asmjs';
-import { CardanoAPIObject, errorIfUndefined } from '../CardanoAPI';
+import { CardanoAPI, errorIfUndefined } from '../CardanoAPI';
 
 type AmountList = Array<Value>;
 export type UTxOList = Array<TransactionUnspentOutput>;
@@ -33,6 +33,9 @@ type ProtocolParameters = {
 
 let protocolParameters = undefined as ProtocolParameters | undefined;
 
+/**
+ * Internal function that initializes the protocol parameters for this module
+*/
 export const setProtocolParameters = (
     coinsPerUtxoWord: string, minFeeA: string, minFeeB: string, maxTxSize: string) => {
     protocolParameters = {
@@ -43,6 +46,9 @@ export const setProtocolParameters = (
     };
 };
 
+/**
+ * Internal function that randomly selects utxos and improves the selection given the criteria.
+*/
 export const randomImprove = (
     inputs: UTxOList, 
     outputs: TransactionOutputs, 
@@ -71,12 +77,12 @@ export const randomImprove = (
 
         createSubSet(utxoSelection, splitOutputsAmount);
 
-        const ideal = CardanoAPIObject.serializationLib.Value.new(
-            CardanoAPIObject.serializationLib.BigNum.from_str('0')
+        const ideal = CardanoAPI.serializationLib.Value.new(
+            CardanoAPI.serializationLib.BigNum.from_str('0')
         ).checked_add(splitOutputsAmount).checked_add(splitOutputsAmount);
     
-        const maximum = CardanoAPIObject.serializationLib.Value.new(
-            CardanoAPIObject.serializationLib.BigNum.from_str('0')
+        const maximum = CardanoAPI.serializationLib.Value.new(
+            CardanoAPI.serializationLib.BigNum.from_str('0')
         ).checked_add(ideal).checked_add(splitOutputsAmount);
     
         const range : ImproveRange = {
@@ -95,10 +101,10 @@ export const randomImprove = (
     if (utxoSelection.remaining.length > 0) {
     const change = utxoSelection.amount.checked_sub(mergedOutputsAmounts);
 
-    let minAmount = CardanoAPIObject.serializationLib.Value.new(
-        CardanoAPIObject.serializationLib.min_ada_required(
+    let minAmount = CardanoAPI.serializationLib.Value.new(
+        CardanoAPI.serializationLib.min_ada_required(
         change,
-        CardanoAPIObject.serializationLib.BigNum.from_str(protocolParameters.coinsPerUtxoWord)
+        CardanoAPI.serializationLib.BigNum.from_str(protocolParameters.coinsPerUtxoWord)
         )
     );
 
@@ -107,15 +113,15 @@ export const randomImprove = (
         BigInt(protocolParameters.maxTxSize) +
         BigInt(protocolParameters.minFeeB);
 
-    maxFee = CardanoAPIObject.serializationLib.Value.new(
-        CardanoAPIObject.serializationLib.BigNum.from_str(maxFee.toString()));
+    maxFee = CardanoAPI.serializationLib.Value.new(
+        CardanoAPI.serializationLib.BigNum.from_str(maxFee.toString()));
 
     minAmount = minAmount.checked_add(maxFee);
 
     if ((compare(change, minAmount) || 0) < 0) {
         const minAda = minAmount
-        .checked_sub(CardanoAPIObject.serializationLib.Value.new(change.coin()))
-        .checked_add(CardanoAPIObject.serializationLib.Value.new(utxoSelection.amount.coin()));
+        .checked_sub(CardanoAPI.serializationLib.Value.new(change.coin()))
+        .checked_add(CardanoAPI.serializationLib.Value.new(utxoSelection.amount.coin()));
 
         createSubSet(utxoSelection, minAda);
         utxoSelection = select(utxoSelection, minAda, limit);
@@ -172,7 +178,6 @@ if (nbFreeUTxO <= 0) {
     throw new Error('INPUTS_EXHAUSTED');
 }
 
-/** @type {TransactionUnspentOutput} utxo */
 let utxo = errorIfUndefined(utxoSelection.subset
     .splice(Math.floor(Math.random() * nbFreeUTxO), 1)
     .pop());
@@ -250,8 +255,8 @@ const utxo : TransactionUnspentOutput = errorIfUndefined(utxoSelection.subset
     .splice(Math.floor(Math.random() * nbFreeUTxO), 1)
     .pop());
 
-const newAmount : Value = CardanoAPIObject.serializationLib.Value.new(
-    CardanoAPIObject.serializationLib.BigNum.from_str('0')
+const newAmount : Value = CardanoAPI.serializationLib.Value.new(
+    CardanoAPI.serializationLib.BigNum.from_str('0')
 )
     .checked_add(utxo.output().amount())
     .checked_add(outputAmount);
@@ -276,8 +281,8 @@ return improve(utxoSelection, outputAmount, limit, range);
 
 function mergeOutputsAmounts(
     outputs: TransactionOutputs) : Value {
-let compiledAmountList = CardanoAPIObject.serializationLib.Value.new(
-    CardanoAPIObject.serializationLib.BigNum.from_str('0')
+let compiledAmountList = CardanoAPI.serializationLib.Value.new(
+    CardanoAPI.serializationLib.BigNum.from_str('0')
 );
 
 for (let i = 0; i < outputs.len(); i++) {
@@ -303,22 +308,22 @@ if (amounts.multiasset() && (amounts.multiasset()?.len() || 0) > 0) {
     let scriptHash = mA.keys().get(i);
 
     for (let j = 0; j < errorIfUndefined(mA.get(scriptHash)).keys().len(); j++) {
-        let _assets = CardanoAPIObject.serializationLib.Assets.new();
+        let _assets = CardanoAPI.serializationLib.Assets.new();
         let assetName = errorIfUndefined(mA.get(scriptHash)).keys().get(j);
 
         _assets.insert(
-        CardanoAPIObject.serializationLib.AssetName.from_bytes(assetName.to_bytes()),
-        CardanoAPIObject.serializationLib.BigNum.from_bytes(
+        CardanoAPI.serializationLib.AssetName.from_bytes(assetName.to_bytes()),
+        CardanoAPI.serializationLib.BigNum.from_bytes(
             errorIfUndefined(mA.get(scriptHash)?.get(assetName)?.to_bytes())
         ));
 
-        let _multiasset = CardanoAPIObject.serializationLib.MultiAsset.new();
+        let _multiasset = CardanoAPI.serializationLib.MultiAsset.new();
         _multiasset.insert(
-        CardanoAPIObject.serializationLib.ScriptHash.from_bytes(scriptHash.to_bytes()),
+        CardanoAPI.serializationLib.ScriptHash.from_bytes(scriptHash.to_bytes()),
         _assets
         );
-        let _value = CardanoAPIObject.serializationLib.Value.new(
-        CardanoAPIObject.serializationLib.BigNum.from_str('0')
+        let _value = CardanoAPI.serializationLib.Value.new(
+        CardanoAPI.serializationLib.BigNum.from_str('0')
         );
         _value.set_multiasset(_multiasset);
 
@@ -330,8 +335,8 @@ if (amounts.multiasset() && (amounts.multiasset()?.len() || 0) > 0) {
 splitAmounts = sortAmountList(splitAmounts, 'DESC');
 
 splitAmounts.push(
-    CardanoAPIObject.serializationLib.Value.new(
-    CardanoAPIObject.serializationLib.BigNum.from_bytes(amounts.coin().to_bytes())
+    CardanoAPI.serializationLib.Value.new(
+    CardanoAPI.serializationLib.BigNum.from_bytes(amounts.coin().to_bytes())
     )
 );
 return splitAmounts;
@@ -428,10 +433,10 @@ if (BigInt(output.coin().to_str()) < BigInt(1)) {
 function isQtyFulfilled(outputAmount: Value, cumulatedAmount: Value, nbFreeUTxO : number) : boolean {
 let amount = outputAmount;
 if (Number(outputAmount.coin().to_str()) > 0) {
-    let minAmount = CardanoAPIObject.serializationLib.Value.new(
-    CardanoAPIObject.serializationLib.min_ada_required(
+    let minAmount = CardanoAPI.serializationLib.Value.new(
+    CardanoAPI.serializationLib.min_ada_required(
         cumulatedAmount,
-        CardanoAPIObject.serializationLib.BigNum.from_str(
+        CardanoAPI.serializationLib.BigNum.from_str(
             errorIfUndefined(protocolParameters).coinsPerUtxoWord
         )
     ));
@@ -444,8 +449,8 @@ if (Number(outputAmount.coin().to_str()) > 0) {
         BigInt(errorIfUndefined(protocolParameters).maxTxSize) +
         BigInt(errorIfUndefined(protocolParameters).minFeeB);
 
-    maxFee = CardanoAPIObject.serializationLib.Value.new(
-        CardanoAPIObject.serializationLib.BigNum.from_str(maxFee.toString())
+    maxFee = CardanoAPI.serializationLib.Value.new(
+        CardanoAPI.serializationLib.BigNum.from_str(maxFee.toString())
     );
 
     amount = amount.checked_add(maxFee);
@@ -466,10 +471,10 @@ return {
 
 const cloneUTxOList = (utxoList: UTxOList) : UTxOList =>
 utxoList.map((utxo: { to_bytes: () => Uint8Array }) =>
-    CardanoAPIObject.serializationLib.TransactionUnspentOutput.from_bytes(utxo.to_bytes())
+    CardanoAPI.serializationLib.TransactionUnspentOutput.from_bytes(utxo.to_bytes())
 );
 
-const cloneValue = (value: Value) : Value => CardanoAPIObject.serializationLib.Value.from_bytes(value.to_bytes());
+const cloneValue = (value: Value) : Value => CardanoAPI.serializationLib.Value.from_bytes(value.to_bytes());
 
 function abs(big: bigint) {
 return big < 0 ? big * BigInt(-1) : big;
@@ -500,8 +505,8 @@ return gQty >= cQty ? (gQty === cQty ? 0 : 1) : -1;
 }
 
 function createEmptyValue() : Value {
-const value = CardanoAPIObject.serializationLib.Value.new(CardanoAPIObject.serializationLib.BigNum.from_str('0'));
-const multiasset = CardanoAPIObject.serializationLib.MultiAsset.new();
+const value = CardanoAPI.serializationLib.Value.new(CardanoAPI.serializationLib.BigNum.from_str('0'));
+const multiasset = CardanoAPI.serializationLib.MultiAsset.new();
 value.set_multiasset(multiasset);
 return value;
 }
