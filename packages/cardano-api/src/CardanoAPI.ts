@@ -106,7 +106,7 @@ export const CardanoAPI = {
       this._serializationLib = serializationLib;
       return;
     }
-    throw new Error(`cardanoSerializationLib is invalid. Please initalize 
+    throw new Error(`cardanoSerializationLib is invalid. Please initialize 
     one of @emurgo/cardano-serialization-library`);
   },
 

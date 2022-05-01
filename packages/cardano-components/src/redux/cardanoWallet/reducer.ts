@@ -9,7 +9,7 @@ const INITIAL_STATE = {
     usedAddresses : undefined,
     stake: undefined,
     send: undefined,
-    initalized: false
+    initialized: false
 };
 
 function reducer(state=INITIAL_STATE,action : any){
@@ -45,7 +45,7 @@ function reducer(state=INITIAL_STATE,action : any){
         case CARDANO_WALLET.INITALIZE:
             return {
                 ...state,
-                initalized: action.payload?.initalize
+                initialized: action.payload?.initialize
             };
         default:
             return state;

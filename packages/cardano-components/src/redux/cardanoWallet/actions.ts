@@ -8,7 +8,7 @@ export const connectWallet = () => async(dispatch : any) => {
     dispatch({ type: CARDANO_WALLET.CONNECTED, payload: payload });
 };
 
-export const initalizeWallet = () => async(dispatch : any) => {
+export const initializeWallet = () => async(dispatch : any) => {
     const response : Boolean | undefined = await API?.baseCommands.isEnabled();
     const payload = await _getWalletResponse(response);
     dispatch({ type: CARDANO_WALLET.CONNECTED, payload: payload });
@@ -61,18 +61,22 @@ const _getWalletResponse = async(isConnected : Boolean | undefined) => {
 };
 
 export const initialize = (config : object) => async(dispatch : any) => {
-    await loader.load()
+    await loader.load();
     if(loader.Cardano){
         //@ts-ignore
-        const blockfrostConfig : Object = config?.blockfrost ? config.blockfrost : {}
-        const blockfrost = Blockfrost(blockfrostConfig)
-        await API.register({ onchainData : blockfrost, cardanoSerializationLibrary : loader.Cardano });
-
-        dispatch({type : CARDANO_WALLET.INITALIZE, payload : {initalize : true}});
+        const blockfrostConfig : Object | undefined = config?.blockfrost
+        if(blockfrostConfig){
+           const blockfrost = Blockfrost(blockfrostConfig)
+           await API.register({ onchainData : blockfrost, cardanoSerializationLibrary : loader.Cardano }); 
+        }
+        else{
+            await API.register({cardanoSerializationLibrary : loader.Cardano })
+        }
+        
+        dispatch({type : CARDANO_WALLET.INITALIZE, payload : {initialize : true}});
     }
 
 };
-
 
 export const isObject = (obj : any) => {
     return Object.prototype.toString.call(obj) === '[object Object]';

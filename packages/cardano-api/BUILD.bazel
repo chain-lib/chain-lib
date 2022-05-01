@@ -9,6 +9,8 @@ load("@bazel_distribution//npm:rules.bzl","assemble_npm","deploy_npm")
 
 load("@bazel_skylib//rules:write_file.bzl","write_file")
 
+load("@envfile//:environment.bzl", "STABLE_VERSION_NUMBER")
+
 package(default_visibility = ["//visibility:public"])
 
 typedoc(
@@ -54,14 +56,14 @@ http_server(
 write_file(
     name = "version_file",
     out = "version_file.txt",
-    content = ["{STABLE_VERSION_NUMBER}"],
+    content = [STABLE_VERSION_NUMBER],
     tags = ["documentation","production"]
 )
 
 write_file(
     name = "description_file",
     out = "description.txt",
-    content = ["Updated documentation for {STABLE_VERSION_NUMBER}"],
+    content = ["Updated documentation for", STABLE_VERSION_NUMBER],
     tags = ["documentation","production"]
 )
 
@@ -72,7 +74,7 @@ deploy_github(
     release_description = ":description_file",
     draft = True,
     repository = "cardano-api",
-    title = "{STABLE_VERSION_NUMBER}",
+    title = STABLE_VERSION_NUMBER,
     tags = ["documentation","production"],
     version_file = ":version_file"
 )
@@ -136,7 +138,7 @@ pkg_npm(
         "README.md",
         "package.json",
     ],
-    substitutions = {"0.0.0-PLACEHOLDER": "{STABLE_VERSION_NUMBER}"},
+    substitutions = {"0.0.0-PLACEHOLDER": STABLE_VERSION_NUMBER},
     tgz = "chain-lib-cardano-api.tgz",
     validate = True,
     deps = [

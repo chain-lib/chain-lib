@@ -5,7 +5,9 @@
   "engines": {
     "node": ">=14"
   },
-  "workspaces" : ["packages/*"],
+  "workspaces": [
+    "packages/*"
+  ],
   "devDependencies": {
     "@babel/core": "^7.17.5",
     "@babel/eslint-parser": "^7.17.0",
@@ -33,6 +35,7 @@
     "@storybook/manager-webpack5": "latest",
     "@storybook/testing-library": "latest",
     "@storybook/web-components": "latest",
+    "@types/node": "^17.0.30",
     "@types/react": "^17.0.34",
     "@typescript-eslint/eslint-plugin": "^5.3.1",
     "@typescript-eslint/parser": "^5.3.1",
@@ -82,9 +85,6 @@
   "scripts": {
     "build": "bazel build //...",
     "test": "bazel test //...",
-    "reset:chain-lib": "sh ./scripts/reset-chain-lib.sh",
-    "storybook:run": "yarn reset:chain-lib && start-storybook -p 6006 -s public",
-    "storybook:build": "yarn reset:chain-lib && build-storybook -s public",
     "lint": "yarn run bazel:format && yarn run bazel:lint && yarn doctor && yarn depcheck && yarn run check-format",
     "bazel:format": "find . -type f \\( -name \"*.bzl\" -or -name WORKSPACE -or -name BUILD -or -name BUILD.bazel \\) ! -path \"*/node_modules/*\" | xargs buildifier -v --warnings=attr-cfg,attr-license,attr-non-empty,attr-output-default,attr-single-file,constant-glob,ctx-actions,ctx-args,depset-iteration,depset-union,dict-concatenation,duplicated-name,filetype,git-repository,http-archive,integer-division,load,load-on-top,native-build,native-package,out-of-order-load,output-group,package-name,package-on-top,positional-args,redefined-variable,repository-name,same-origin-load,string-iteration,unsorted-dict-items,unused-variable",
     "bazel:lint": "yarn bazel:format --lint=warn",
@@ -92,14 +92,12 @@
     "cz": "git-cz",
     "check-format": "prettier --list-different \"./**/*.{ts,js,json,md}\"",
     "check-spelling": "cspell --config=.cspell.json \"**/*.{md,ts,js}\"",
-    "check-publish-npm": "sh ./scripts/reset-chain-lib.sh 0.0.9 prod",
-    "publish-npm-next": "sh ./scripts/reset-chain-lib.sh 0.0.9 prod && npm login && npm add-user",
+    "check-publish-npm": "sh ./scripts/release.sh publish latest 0.0.9",
+    "publish-npm-next": "sh ./scripts/release.sh publish latest 0.0.9 && npm login && npm add-user",
     "publish-cardano-api": "npm publish --access=public ./chain-lib-cardano-api-0.0.9.tgz",
     "pre-commit": "yarn lint-staged",
     "pre-push": "yarn check-format && yarn check-spelling",
-    "serve": "ibazel run //packages/cardano-components:server",
-    "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook"
+    "serve": "ibazel run //packages/cardano-components:serve_storybook"
   },
   "config": {
     "commitizen": {

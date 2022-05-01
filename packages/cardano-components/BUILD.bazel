@@ -1,11 +1,13 @@
 load("@build_bazel_rules_nodejs//:index.bzl", "pkg_npm")
 load("@npm//@bazel/typescript:index.bzl", "ts_config", "ts_project")
 load("@npm//webpack-cli:index.bzl", webpack = "webpack_cli")
-load("@npm//typedoc:index.bzl", typedoc = "typedoc")
+load("@npm//typedoc:index.bzl", "typedoc")
 load("@npm//http-server:index.bzl", "http_server")
-
+load("@npm//@storybook/web-components:index.bzl", storybook = "build_storybook")
 load("@bazel_distribution//github:rules.bzl","deploy_github")
 load("@bazel_distribution//npm:rules.bzl","assemble_npm","deploy_npm")
+
+load("@envfile//:environment.bzl", "STORYBOOK_CARDANO_BLOCKFROST_TESTNET", "STORYBOOK_CARDANO_ADDRESS","STABLE_VERSION_NUMBER")
 
 load("@bazel_skylib//rules:write_file.bzl","write_file")
 
@@ -52,14 +54,14 @@ http_server(
 write_file(
     name = "version_file",
     out = "version_file.txt",
-    content = ["{STABLE_VERSION_NUMBER}"],
+    content = [STABLE_VERSION_NUMBER],
     tags = ["documentation","production"]
 )
 
 write_file(
     name = "description_file",
     out = "description.txt",
-    content = ["Updated documentation for {STABLE_VERSION_NUMBER}"],
+    content = ["Updated documentation for", STABLE_VERSION_NUMBER],
     tags = ["documentation","production"]
 )
 
@@ -70,7 +72,7 @@ deploy_github(
     release_description = ":description_file",
     draft = True,
     repository = "cardano-components",
-    title = "{STABLE_VERSION_NUMBER}",
+    title = STABLE_VERSION_NUMBER,
     tags = ["documentation","production"],
     version_file = ":version_file"
 )
@@ -108,6 +110,7 @@ ts_project(
         "@npm//redux",
         "@npm//redux-thunk",
         "@npm//tslib",
+        "@npm//@types/node"
     ],
 )
 
@@ -144,8 +147,8 @@ pkg_npm(
         "package.json",
     ],
     substitutions = {
-        "0.0.0-PLACEHOLDER": "{STABLE_VERSION_NUMBER}",
-        "CHAIN-LIB-CARDANO-API-0.0.0": "{CHAIN_LIB_CARDANO_API}",
+        "0.0.0-PLACEHOLDER": STABLE_VERSION_NUMBER,
+        "CHAIN-LIB-CARDANO-API-0.0.0": STABLE_VERSION_NUMBER,
     },
     tgz = "chain-lib-cardano-components.tgz",
     validate = True,
@@ -153,6 +156,49 @@ pkg_npm(
         "README.md",
         ":build",
         ":bundle",
-        ":documentation",
     ],
+)
+
+filegroup(
+    name = ".storybook",
+    srcs = glob([".storybook/*"]),
+    tags = ["storybook"],
+)
+
+storybook(
+    name = "build_storybook",
+    args = [
+        "-c",
+        "./packages/cardano-components/.storybook",
+        "-o",
+        "$(@D)",
+    ],
+    data = glob(["src/**/*.ts"]) + [
+        ":.storybook",
+        "@npm//:node_modules", 
+        "//:tsconfig.json",
+        "tsconfig.json",
+        "//packages/cardano-api:js_library",
+        "webpack.config.js",
+        "package.json",
+        "//:.env",
+    ],
+    env = {
+        "STORYBOOK_CARDANO_ADDRESS": STORYBOOK_CARDANO_ADDRESS,
+        "STORYBOOK_CARDANO_BLOCKFROST_TESTNET": STORYBOOK_CARDANO_BLOCKFROST_TESTNET,
+    },
+    tags = ["storybook"],
+    output_dir = True
+)
+
+http_server(
+    name = "serve_storybook",
+    data = [
+        ":build_storybook",
+    ],
+    args = [
+        "./packages/cardano-components/build_storybook/",
+        "-c-1",
+    ],
+    tags = ["storybook"]
 )

@@ -37,7 +37,7 @@ import { WalletInfo } from '@chain-lib/cardano-api';
 @customElement('cardano-connect-wallet-component')
 export class CardanoConnectWalletComponent extends connect(Store)(Menu) {
 
-  firstInitalized : boolean = true;
+  firstInitialized : boolean = true;
 
   isWalletUpdated : boolean = false;
 
@@ -56,8 +56,8 @@ export class CardanoConnectWalletComponent extends connect(Store)(Menu) {
   }
 
   stateChanged(state : any) {
-    if(state.reducer.initalized === true && this.firstInitalized === true){
-      this.firstInitalized = false
+    if(state.reducer.initialized === true && this.firstInitialized === true){
+      this.firstInitialized = false
       this.walletInfo = API.getWalletInfo()
       var slots = ''
       if(this.walletInfo.length != 0){

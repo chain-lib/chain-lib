@@ -9,6 +9,10 @@ load("//tools:bazel_deps.bzl", "fetch_dependencies")
 
 fetch_dependencies()
 
+load("//tools:load_env.bzl", "envfile")
+
+envfile(name="envfile",files=["//:.env"])
+
 load("@build_bazel_rules_nodejs//:repositories.bzl", "build_bazel_rules_nodejs_dependencies")
 
 build_bazel_rules_nodejs_dependencies()
@@ -34,3 +38,4 @@ github_deps()
 
 load("@bazel_skylib//:workspace.bzl", "bazel_skylib_workspace")
 bazel_skylib_workspace()
+

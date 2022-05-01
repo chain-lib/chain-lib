@@ -1,7 +1,7 @@
 import {customElement, property} from 'lit/decorators.js';
 import { LitElement, html } from 'lit';
 import { Store } from '../../redux';
-import { initialize } from '../../redux/cardanoWallet/actions'
+import { initialize } from '../../redux/cardanoWallet/actions';
 
 type config = {blockfrost: Object}
 
@@ -28,7 +28,7 @@ type config = {blockfrost: Object}
 export class CardanoInitialize extends LitElement {
 
   @property({type: Object})
-  config : config | Object = {}
+  config : config | Object = {};
 
   constructor(){
     super();
