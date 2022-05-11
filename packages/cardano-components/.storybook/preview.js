@@ -1,5 +1,5 @@
-import { CardanoInitialize } from "../src/components";
-import * as DefaultButton from "../src/components/CardanoConnectWalletComponent/DefaultButton";
+import { CardanoInitialize, CardanoConnectWalletButton } from "../src/components";
+
 import { html } from 'lit';
 
 const initialize = (Story) => {
@@ -23,4 +23,4 @@ export const decorators = [
   ];
   
 CardanoInitialize;
-DefaultButton;
+CardanoConnectWalletButton;

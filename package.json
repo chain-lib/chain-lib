@@ -21,8 +21,8 @@
     "@blockfrost/blockfrost-js": "^4.0.1",
     "@commitlint/cli": "^13.2.1",
     "@commitlint/config-conventional": "^13.2.0",
-    "@emurgo/cardano-serialization-lib-asmjs": "^9.1.1",
-    "@emurgo/cardano-serialization-lib-browser": "^9.1.1",
+    "@emurgo/cardano-serialization-lib-asmjs": "^10.0.4",
+    "@emurgo/cardano-serialization-lib-browser": "^10.0.4",
     "@lit-labs/react": "^1.0.1",
     "@material/mwc-button": "^0.25.3",
     "@material/mwc-menu": "^0.25.3",
@@ -97,7 +97,10 @@
     "publish-cardano-api": "npm publish --access=public ./chain-lib-cardano-api-0.0.9.tgz",
     "pre-commit": "yarn lint-staged",
     "pre-push": "yarn check-format && yarn check-spelling",
-    "serve": "ibazel run //packages/cardano-components:serve_storybook"
+    "serve": "ibazel run //packages/cardano-components:serve_storybook",
+    "docs:deploy-cardano-components": "bazel run //packages/cardano-components:deploy_documentation",
+    "docs:deploy-cardano-api": "bazel run //packages/cardano-api:deploy_documentation",
+    "docs:deploy": "yarn docs:deploy-cardano-api && yarn docs:deploy-cardano-components"
   },
   "config": {
     "commitizen": {

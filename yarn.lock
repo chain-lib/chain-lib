@@ -1794,10 +1794,20 @@
   resolved "https://registry.yarnpkg.com/@emotion/weak-memoize/-/weak-memoize-0.2.5.tgz#8eed982e2ee6f7f4e44c253e12962980791efd46"
   integrity sha512-6U71C2Wp7r5XtFtQzYrW5iKFT67OixrSxjI4MptCHzdSVlgabczzqLe0ZSgnub/5Kp4hSbpDB1tMytZY9pwxxA==
 
+"@emurgo/cardano-serialization-lib-asmjs@^10.0.4":
+  version "10.0.4"
+  resolved "https://registry.yarnpkg.com/@emurgo/cardano-serialization-lib-asmjs/-/cardano-serialization-lib-asmjs-10.0.4.tgz#aa22a737c0a86143e5bb34d32dd12eb4fad1fb32"
+  integrity sha512-pWfNQaCwmFFGkbQMVHpDeMZJD7LThPfxqZJyZg0PRke6P6pwHKx2fZoXXEryqmwA1RwsvQ99S/FesQMLmcEVfw==
+
 "@emurgo/cardano-serialization-lib-asmjs@^9.1.1":
   version "9.1.4"
   resolved "https://registry.yarnpkg.com/@emurgo/cardano-serialization-lib-asmjs/-/cardano-serialization-lib-asmjs-9.1.4.tgz#f217d25ccaaee79fb06051800b6047ab2c7876ac"
   integrity sha512-En+rm1ZsfFycIAg36mkRdRwMCcXxwZ/1pCP9C/8cGsiB/nwlBwL1jRewOj22+YQufbESOes3zKmGK+cnbG5XbA==
+
+"@emurgo/cardano-serialization-lib-browser@^10.0.4":
+  version "10.0.4"
+  resolved "https://registry.yarnpkg.com/@emurgo/cardano-serialization-lib-browser/-/cardano-serialization-lib-browser-10.0.4.tgz#b3dcd32cc69e05b1e42d1ee25a60e112dc444d47"
+  integrity sha512-rCLmHtZkkgD9BTPjYw19vVLLaHI2sQ9qwjS2oX9eNCtB5P28K3rAO7QI05p5bbxYvg+35+xGhhYP1HMpBnE2FA==
 
 "@emurgo/cardano-serialization-lib-browser@^9.1.1":
   version "9.1.4"

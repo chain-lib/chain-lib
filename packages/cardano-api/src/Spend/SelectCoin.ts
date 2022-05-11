@@ -104,6 +104,7 @@ export const randomImprove = (
     let minAmount = CardanoAPI.serializationLib.Value.new(
         CardanoAPI.serializationLib.min_ada_required(
         change,
+        false,
         CardanoAPI.serializationLib.BigNum.from_str(protocolParameters.coinsPerUtxoWord)
         )
     );
@@ -436,6 +437,7 @@ if (Number(outputAmount.coin().to_str()) > 0) {
     let minAmount = CardanoAPI.serializationLib.Value.new(
     CardanoAPI.serializationLib.min_ada_required(
         cumulatedAmount,
+        false,
         CardanoAPI.serializationLib.BigNum.from_str(
             errorIfUndefined(protocolParameters).coinsPerUtxoWord
         )

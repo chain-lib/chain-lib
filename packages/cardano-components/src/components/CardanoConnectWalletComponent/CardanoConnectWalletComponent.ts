@@ -6,9 +6,9 @@ import type { ListItemBase } from "@material/mwc-list/mwc-list-item-base";
 import { Store } from '../../redux';
 import { update } from '../../redux/cardanoWallet/actions';
 import { loadDefaultStylesheets} from '../helper/loadStyle';
-import { API } from '../../redux/cardanoWallet';
 import { html } from 'lit';
 import { WalletInfo } from '@chain-lib/cardano-api';
+import { setWallet } from "../../redux/cardanoWallet/actions";
 
 /**
  * This component is used to allow users to connect to your website. It inherits all properties of [https://www.npmjs.com/package/@material/mwc-menu]. It will go ahead and configure the <mwc-list-item> components for you, so you can ignore that. Please reference this docuemntation for styling.
@@ -33,6 +33,17 @@ import { WalletInfo } from '@chain-lib/cardano-api';
  * @param bech32 - Boolean. This optional parameter defaults to true. It determines how the event shows addresses. Bech32 is human readable forms (addr...).
  *
  * @returns type and meaning of return value
+ * 
+ * @event state - There is an event named state that can be subscribed to. Any time a wallet is selected / updated the state will return an object as follows :
+ * ```
+ * {
+ *    wallet : {name : "name", icon : "icon"},
+ *    changeAddress : "changeAddress",
+ *    rewardAddresses : ["rewardAddresses"],
+ *    usedAddresses : ["usedAddresses"],
+ *    unusedAddresses : ["unusedAddresses"],
+ * }
+ * ```
 */
 @customElement('cardano-connect-wallet-component')
 export class CardanoConnectWalletComponent extends connect(Store)(Menu) {
@@ -42,6 +53,10 @@ export class CardanoConnectWalletComponent extends connect(Store)(Menu) {
   isWalletUpdated : boolean = false;
 
   walletInfo : WalletInfo[] = [];
+
+  walletCache : string = ""
+
+  cachedWalletInfo : Object = {}
 
   @property({type:Boolean})
   bech32 = true
@@ -56,25 +71,38 @@ export class CardanoConnectWalletComponent extends connect(Store)(Menu) {
   }
 
   stateChanged(state : any) {
-    if(state.reducer.initialized === true && this.firstInitialized === true){
+    if(typeof state.reducer.walletInfo !== "undefined" && this.firstInitialized == true){
       this.firstInitialized = false
-      this.walletInfo = API.getWalletInfo()
       var slots = ''
-      if(this.walletInfo.length != 0){
-        this.walletInfo.forEach((walletInfo) => {
+      if(state.reducer.length != 0){
+        state.reducer.walletInfo.forEach((walletInfo : any) => {
         slots = slots + `<mwc-list-item group="wallets" value=${walletInfo["windowName"]} graphic="icon"><image src="${walletInfo["icon"]}" style='height: 100%; width: 100%; object-fit: contain' slot='graphic'></image><span>${walletInfo["name"]}</span></mwc-list-item>`
       })
       }
-      if(this.walletInfo.length === 0){
+      if(state.reducer.walletInfo.length === 0){
         slots = `<mwc-list-item disabled><span>${this.noWalletMessage}</span></mwc-list-item>`
       }
       super.innerHTML = super.innerHTML + slots
       super.render()
     }
-    if(this.isWalletUpdated){
-      this.isWalletUpdated = false
-      this._eventHandler(state);
-    }
+    if(state.reducer.selectedWallet != this.walletCache && typeof state.reducer.selectedWallet != "undefined" && this.isWalletUpdated == true){
+      this.walletCache = state.reducer.selectedWallet;
+      this.cachedWalletInfo = state.reducer.walletInfo.find((s : any) => {
+        if(s?.windowName == this.walletCache){
+          return {
+            ...s
+          }
+        }
+      }
+      ) ?? {};
+      this._eventHandler({
+        wallet : this.cachedWalletInfo ?? "", 
+        changeAddress : state.reducer.changeAddress ?? [], 
+        rewardAddresses : state.reducer.rewardAddresses ?? [],
+        unusedAddresses : state.reducer.unusedAddresses ?? [],
+        usedAddresses : state.reducer.usedAddresses ?? [],
+      });
+    }  
   }
 
   render(){
@@ -93,12 +121,13 @@ export class CardanoConnectWalletComponent extends connect(Store)(Menu) {
   }
   
   clickHandler = () => {
-      const setWallet = async() => {
-        await API.setWallet(this.convertType(super.selected).value);
+      const setWalletValue = async() => {
+        this.isWalletUpdated = false
+        await Promise.resolve(Store.dispatch(setWallet(this.convertType(super.selected).value)))
         this.isWalletUpdated = true
-        Store.dispatch(update(this.bech32))
+        await Promise.resolve(Store.dispatch(update(this.bech32)))
       }
-      setWallet()
+      setWalletValue()
   }
 
   convertType = (value : ListItemBase | ListItemBase[] | null) : ListItemBase => {

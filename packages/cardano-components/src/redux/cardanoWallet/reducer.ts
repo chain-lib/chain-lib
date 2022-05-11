@@ -2,6 +2,8 @@ import { combineReducers } from 'redux';
 import { CARDANO_WALLET } from '.';
 
 const INITIAL_STATE = {
+    walletInfo : undefined,
+    selectedWallet : undefined,
     walletActive : undefined,
     rewardAddresseses : undefined,
     changeAddress : undefined,
@@ -9,11 +11,27 @@ const INITIAL_STATE = {
     usedAddresses : undefined,
     stake: undefined,
     send: undefined,
-    initialized: false
+    initialized: false,
 };
 
 function reducer(state=INITIAL_STATE,action : any){
     switch(action.type){
+        case CARDANO_WALLET.GET_WALLET_INFO:
+            return {
+                ...state,
+                walletInfo : action.payload.map((s : any)=>{
+                    return {
+                        name : s?.name ?? "",
+                        icon : s?.icon ?? "",
+                        windowName : s?.windowName ?? "",
+                    }
+                })
+            }
+        case CARDANO_WALLET.CHANGE_WALLET:
+            return {
+                ...state,
+                selectedWallet : action.payload,
+            }
         case CARDANO_WALLET.CONNECTED:
             return {
                 ...state,

@@ -52,6 +52,7 @@ Promise<string> => {
         } 
         const minAda = CardanoAPI.serializationLib.min_ada_required(
             outputValue, 
+            false,
             CardanoAPI.serializationLib.BigNum.from_str(protocolParameter.minUtxo || '1000000')
         );
         if(CardanoAPI.serializationLib.BigNum.from_str(lovelace).compare(minAda) < 0){

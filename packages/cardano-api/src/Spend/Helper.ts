@@ -90,17 +90,20 @@ export const _txBuilder = ({PaymentAddress, Utxos, Outputs, ProtocolParameter, M
 
     const inputs = selection.input;
 
-    const txBuilder = CardanoAPI.serializationLib.TransactionBuilder.new(
-        CardanoAPI.serializationLib.LinearFee.new(
+    const txConfig = CardanoAPI.serializationLib.TransactionBuilderConfigBuilder.new()
+    txConfig.max_tx_size(MULTIASSET_SIZE)
+    txConfig.max_value_size(MULTIASSET_SIZE)
+    txConfig.key_deposit(CardanoAPI.serializationLib.BigNum.from_str(ProtocolParameter.keyDeposit.toString()))
+    txConfig.pool_deposit(CardanoAPI.serializationLib.BigNum.from_str(ProtocolParameter.poolDeposit.toString()))
+    txConfig.coins_per_utxo_word(CardanoAPI.serializationLib.BigNum.from_str(ProtocolParameter.minUtxo.toString()))
+    txConfig.fee_algo(
+            CardanoAPI.serializationLib.LinearFee.new(
             CardanoAPI.serializationLib.BigNum.from_str(ProtocolParameter.linearFee.minFeeA),
             CardanoAPI.serializationLib.BigNum.from_str(ProtocolParameter.linearFee.minFeeB)
-        ),
-        CardanoAPI.serializationLib.BigNum.from_str(ProtocolParameter.minUtxo.toString()),
-        CardanoAPI.serializationLib.BigNum.from_str(ProtocolParameter.poolDeposit.toString()),
-        CardanoAPI.serializationLib.BigNum.from_str(ProtocolParameter.keyDeposit.toString()),
-        MULTIASSET_SIZE,
-        MULTIASSET_SIZE
-    );
+        )
+    )
+    
+    const txBuilder = CardanoAPI.serializationLib.TransactionBuilder.new(txConfig);
 
     for (var i = 0; i < inputs.length; i++) {
         const utxo = inputs[i];
@@ -203,6 +206,7 @@ export const _txBuilder = ({PaymentAddress, Utxos, Outputs, ProtocolParameter, M
         partialChange.set_multiasset(partialMultiAssets);
         const minAda = CardanoAPI.serializationLib.min_ada_required(
             partialChange,
+            false,
             ProtocolParameter.minUtxo
         );
         partialChange.set_coin(minAda);
