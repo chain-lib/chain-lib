@@ -3,14 +3,17 @@ load("@npm//@bazel/typescript:index.bzl", "ts_config", "ts_project")
 load("@npm//webpack-cli:index.bzl", webpack = "webpack_cli")
 load("@npm//typedoc:index.bzl", typedoc = "typedoc")
 load("@npm//http-server:index.bzl", "http_server")
-load("@bazel_distribution//github:rules.bzl","deploy_github")
 load("@bazel_distribution//npm:rules.bzl","assemble_npm","deploy_npm")
 load("@bazel_skylib//rules:write_file.bzl","write_file")
 load(
     "@envfile//:environment.bzl", 
     "STABLE_VERSION_NUMBER",
+    "GITHUB_USERNAME",
+    "GITHUB_EMAIL",
+    "GITHUB_TOKEN"
 )
 load("//tools:deployment.bzl","deployment")
+load("//tools:deploy_github.bzl","deploy_github")
 
 
 package(default_visibility = ["//visibility:public"])
@@ -55,30 +58,14 @@ http_server(
     tags = ["documentation","local"]
 )
 
-write_file(
-    name = "version_file",
-    out = "version_file.txt",
-    content = [STABLE_VERSION_NUMBER],
-    tags = ["documentation","production","manual"]
-)
-
-write_file(
-    name = "description_file",
-    out = "description.txt",
-    content = ["Updated documentation for", STABLE_VERSION_NUMBER],
-    tags = ["documentation","production","manual"]
-)
-
 deploy_github(
     name = "deploy_documentation",
-    organisation = deployment['github.organisation'],
-    repository = deployment["github.repository.cardano-api"],
-    release_description = ":description_file",
-    title = STABLE_VERSION_NUMBER,
-    title_append_version = True,
-    version_file = ":version_file",
-    archive = ":documentation",
-    draft = False,
+    username=GITHUB_USERNAME,
+    email=GITHUB_EMAIL,
+    token=GITHUB_TOKEN,
+    srcs = [":documentation"],
+    org = deployment['github.organisation'],
+    repo = deployment["github.repository.cardano-api"],
     tags = ["documentation","production","manual"],
 )
 

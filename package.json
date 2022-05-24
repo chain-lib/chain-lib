@@ -98,8 +98,8 @@
     "pre-commit": "yarn lint-staged",
     "pre-push": "yarn check-format && yarn check-spelling",
     "serve": "ibazel run //packages/cardano-components:serve_storybook",
-    "docs:deploy-cardano-components": "bazel run //packages/cardano-components:deploy_documentation",
-    "docs:deploy-cardano-api": "bazel run //packages/cardano-api:deploy_documentation",
+    "docs:deploy-cardano-components": "bazel build //packages/cardano-components:deploy_documentation",
+    "docs:deploy-cardano-api": "bazel build //packages/cardano-api:deploy_documentation",
     "docs:deploy": "yarn docs:deploy-cardano-api && yarn docs:deploy-cardano-components"
   },
   "config": {
