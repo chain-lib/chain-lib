@@ -67,7 +67,7 @@ deploy_github(
     srcs = [":documentation"],
     org = deployment['github.organisation'],
     repo = deployment["github.repository.cardano-components"],
-    tags = ["documentation","production","manual"],
+    tags = ["documentation","production",],
 )
 
 ts_config(

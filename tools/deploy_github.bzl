@@ -5,18 +5,16 @@ def deploy_github(name, srcs, username, email, org, repo, token, visibility=None
   )
   native.genrule(
     name = name,
-    srcs = srcs,
-    outs = [],
-    cmd = """(
-        git config --global user.name "{username}"
-        git config --global user.email {email}
-        ls
-        cd ${name}_files
-        ls
-        git remote set-url origin https://{token}@github.com/{org}/{repo}.git
-        git push origin main   
-    )
-    """,
+    srcs = [":"+name+"_files"],
+    outs =[":{name}_files"],
+    cmd = " && ".join([
+        "cd $(location :" + name + "_files)",
+        "git init",
+        "git remote set-url origin https://" + token + "@github.com/" + org + "/" + repo + ".git",
+        "git add --all",
+        'git commit -m "update documentation"',
+        "git push",
+    ]),
     visibility = visibility,
     **kwargs
   )
