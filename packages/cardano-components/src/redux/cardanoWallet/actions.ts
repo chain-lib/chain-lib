@@ -14,6 +14,16 @@ export const initializeWallet = () => async(dispatch : any) => {
     dispatch({ type: CARDANO_WALLET.CONNECTED, payload: payload });
 };
 
+export const getWalletInfo = () => (dispatch : any) => {
+   dispatch({type: CARDANO_WALLET.GET_WALLET_INFO, payload : API.getWalletInfo()})
+}
+
+export const setWallet = (name : string) => async(dispatch : any) => {
+    await API.setWallet(name)
+
+    dispatch({type : CARDANO_WALLET.CHANGE_WALLET, payload : name})
+}
+
 export const update = (bech32 : boolean) => async(dispatch : any) => {
     const unusedAddresses = await API?.baseCommands.getUnusedAddresses(
         bech32 ? API?.addressReturnType.bech32 : API?.addressReturnType.hex);

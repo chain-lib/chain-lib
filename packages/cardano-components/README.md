@@ -2,7 +2,9 @@
 
 This is a repository full of reusable web components for working with the cardano blockchain. 
 
-What is a web-components? It is a way to write code that can be used with any framework, that means you can use it with React, Angular, Vue, base html and any other framework you might use. 
+What is a web-components? It is a way to write code that can be used with any framework, that means you can use it with React, Angular, Vue, base html and any other framework you might use.
+
+You can find a documentation website [here](https://cardano-components.chain-lib.com/)
 
 # Install and setup
 To install run:
@@ -37,6 +39,30 @@ This is used to initialize your deployment with custom variables. Eventually thi
     }
 }>
 </cardano-initialize>
+```
+
+### CardanoConnectWalletButton
+ This component is used to allow users to connect to your website. It is the easiest way to get started.
+ |Variable|Description|
+ |--------|-----------|
+ |noWalletMessage|This is the string that displays when the user does not have any wallets downloaded. It defaults to "Please install a d-app wallet".|
+ |bech32|If true then the state event will display human readable bech32 addresses, otherwise it will display hex addresses.|
+ |defaultConnect|This is the default message your component will display in your button.|
+ |buttonArgs|Args you can use to effect the button. It is an object like {"underlined" : true}|
+ |menuArgs|Args you can use to effect the menu. It works like buttonArgs|
+
+ |Event|Description|
+ |-----|-----------|
+ |state|This will give the current redux state, any time the state is updated. What does this mean, the state will tell you if its connected or not, and if it is connected then it will tell you useful information like the wallet addresses.|
+ 
+ ```javascript
+   <cardano-connect-wallet-button 
+     noWalletMessage = "Please install a d-app wallet."
+     defaultConnect = "Connect"
+     buttonArgs = "{"underlined":true}"
+     menuArgs = "{}"
+     bech32 = "true"
+   />
 ```
 
 ### CardanoConnectWalletComponent

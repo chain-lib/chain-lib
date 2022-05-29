@@ -1,7 +1,7 @@
 import {customElement, property} from 'lit/decorators.js';
 import { LitElement, html } from 'lit';
 import { Store } from '../../redux';
-import { initialize } from '../../redux/cardanoWallet/actions';
+import { initialize, getWalletInfo } from '../../redux/cardanoWallet/actions';
 
 type config = {blockfrost: Object}
 
@@ -38,13 +38,12 @@ export class CardanoInitialize extends LitElement {
   async init() : Promise<void> {
     // Give the browser a chance to paint
     await new Promise((r) => setTimeout(r, 0));
-    Store.dispatch(initialize(this.config));
-
+    await Promise.resolve(Store.dispatch(initialize(this.config)))
+    await Promise.resolve(Store.dispatch(getWalletInfo()))
   }
 
   render(){
     return html`<slot></slot>`;
   }
   
-
 }

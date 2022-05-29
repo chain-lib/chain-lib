@@ -21,8 +21,8 @@
     "@blockfrost/blockfrost-js": "^4.0.1",
     "@commitlint/cli": "^13.2.1",
     "@commitlint/config-conventional": "^13.2.0",
-    "@emurgo/cardano-serialization-lib-asmjs": "^9.1.1",
-    "@emurgo/cardano-serialization-lib-browser": "^9.1.1",
+    "@emurgo/cardano-serialization-lib-asmjs": "^10.0.4",
+    "@emurgo/cardano-serialization-lib-browser": "^10.0.4",
     "@lit-labs/react": "^1.0.1",
     "@material/mwc-button": "^0.25.3",
     "@material/mwc-menu": "^0.25.3",
@@ -92,12 +92,15 @@
     "cz": "git-cz",
     "check-format": "prettier --list-different \"./**/*.{ts,js,json,md}\"",
     "check-spelling": "cspell --config=.cspell.json \"**/*.{md,ts,js}\"",
-    "check-publish-npm": "sh ./scripts/release.sh publish latest 0.0.9",
-    "publish-npm-next": "sh ./scripts/release.sh publish latest 0.0.9 && npm login && npm add-user",
-    "publish-cardano-api": "npm publish --access=public ./chain-lib-cardano-api-0.0.9.tgz",
+    "check-publish-npm": "sh ./scripts/release.sh pack latest 0.0.10",
+    "publish-npm-next": "sh ./scripts/release.sh publish latest 0.0.10 && npm login && npm add-user",
+    "publish-cardano-api": "npm publish --access=public ./chain-lib-cardano-api-0.0.10.tgz",
     "pre-commit": "yarn lint-staged",
     "pre-push": "yarn check-format && yarn check-spelling",
-    "serve": "ibazel run //packages/cardano-components:serve_storybook"
+    "serve": "ibazel run //packages/cardano-components:serve_storybook",
+    "docs:deploy-cardano-components": "bazel build //packages/cardano-components:deploy_documentation --sandbox_debug",
+    "docs:deploy-cardano-api": "bazel build //packages/cardano-api:deploy_documentation --sandbox_debug",
+    "docs:deploy": "yarn docs:deploy-cardano-api && yarn docs:deploy-cardano-components"
   },
   "config": {
     "commitizen": {

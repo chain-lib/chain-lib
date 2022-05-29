@@ -8,8 +8,10 @@ export default {
 
 export const Send = () =>{
   return html`
-      <cardano-send-button recipients: [{"address": "${process.env.STORYBOOK_CARDANO_ADDRESS ?? ""}", "amount": 5}]>Send</cardano-send-button>
+      <cardano-send-button recipients: [{"address": "${process.env.STORYBOOK_CARDANO_ADDRESS ?? ''}", "amount": 5}]>
+        Send
+      </cardano-send-button>
   `;
-}
+};
 
-CardanoSendButton // Forces webpack (storybook) not to treeshake module
+CardanoSendButton; // Forces webpack (storybook) not to treeshake module

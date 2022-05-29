@@ -4,10 +4,18 @@ load("@npm//webpack-cli:index.bzl", webpack = "webpack_cli")
 load("@npm//typedoc:index.bzl", "typedoc")
 load("@npm//http-server:index.bzl", "http_server")
 load("@npm//@storybook/web-components:index.bzl", storybook = "build_storybook")
-load("@bazel_distribution//github:rules.bzl","deploy_github")
 load("@bazel_distribution//npm:rules.bzl","assemble_npm","deploy_npm")
-
-load("@envfile//:environment.bzl", "STORYBOOK_CARDANO_BLOCKFROST_TESTNET", "STORYBOOK_CARDANO_ADDRESS","STABLE_VERSION_NUMBER")
+load(
+    "@envfile//:environment.bzl", 
+    "STORYBOOK_CARDANO_BLOCKFROST_TESTNET", 
+    "STORYBOOK_CARDANO_ADDRESS",
+    "STABLE_VERSION_NUMBER",
+    "GITHUB_USERNAME",
+    "GITHUB_EMAIL",
+    "GITHUB_TOKEN"
+)
+load("//tools:deployment.bzl","deployment")
+load("//tools:deploy_github.bzl","deploy_github")
 
 load("@bazel_skylib//rules:write_file.bzl","write_file")
 
@@ -51,30 +59,16 @@ http_server(
     tags = ["documentation","local"]
 )
 
-write_file(
-    name = "version_file",
-    out = "version_file.txt",
-    content = [STABLE_VERSION_NUMBER],
-    tags = ["documentation","production"]
-)
-
-write_file(
-    name = "description_file",
-    out = "description.txt",
-    content = ["Updated documentation for", STABLE_VERSION_NUMBER],
-    tags = ["documentation","production"]
-)
-
 deploy_github(
     name = "deploy_documentation",
-    archive = ":documentation",
-    organisation = "chain-lib",
-    release_description = ":description_file",
-    draft = True,
-    repository = "cardano-components",
-    title = STABLE_VERSION_NUMBER,
-    tags = ["documentation","production"],
-    version_file = ":version_file"
+    username=GITHUB_USERNAME,
+    build_target_html_files="index.html modules.html",
+    cname="cardano-components.chain-lib.com",
+    token=GITHUB_TOKEN,
+    srcs = [":documentation"],
+    org = deployment['github.organisation'],
+    repo = deployment["github.repository.cardano-components"],
+    tags = ["documentation","production",],
 )
 
 ts_config(

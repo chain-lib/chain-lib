@@ -5,7 +5,9 @@ export const CARDANO_WALLET = {
     ADDRESSES: 'cardanoWallet/ADDRESSES',
     STAKE: 'cardanoWallet/STAKE',
     SEND: 'cardanoWallet/SEND',
-    INITALIZE: 'cardanoWallet/INITALIZEW'
+    INITALIZE: 'cardanoWallet/INITALIZE',
+    CHANGE_WALLET: 'cardanoWallet/CHANGE_WALLET',
+    GET_WALLET_INFO: 'cardanoWallet/GET_WALLET_INFO'
 };
 
 export const API = CardanoAPI
