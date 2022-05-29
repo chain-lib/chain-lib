@@ -61,7 +61,8 @@ http_server(
 deploy_github(
     name = "deploy_documentation",
     username=GITHUB_USERNAME,
-    email=GITHUB_EMAIL,
+    build_target_html_files="index.html modules.html",
+    cname="cardano-api.chain-lib.com",
     token=GITHUB_TOKEN,
     srcs = [":documentation"],
     org = deployment['github.organisation'],
