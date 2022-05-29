@@ -29,7 +29,7 @@
     "@lit-labs/react": "^1.0.1",
     "react": "^17.0.2",
     "@types/react": "^17.0.2",
-    "@emurgo/cardano-serialization-lib-browser":"^9.1.1",
+    "@emurgo/cardano-serialization-lib-browser":"^10.0.4",
     "buffer":"^6.0.3",
     "axios":"^0.24.0",
     "tslib": "^2.3.1",

@@ -19,7 +19,7 @@
     "directory": "packages/cardano-api"
   },
   "dependencies": {
-    "@emurgo/cardano-serialization-lib-asmjs":"^9.1.1",
+    "@emurgo/cardano-serialization-lib-asmjs":"^10.0.4",
     "axios":"^0.24.0",
     "buffer":"^6.0.3"
   }
