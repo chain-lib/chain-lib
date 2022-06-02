@@ -1,31 +1,8 @@
 import { CardanoAPI } from '../CardanoAPI';
 import {getProtocolParameter, _makeMultiAsset, _txBuilder, _signSubmitTx} from './Helper';
-
-type Metadata = object | null;
-
-type Asset = {
-    unit: string;
-    quantity: string;
-}
-
-type Send = {
-    address: string; 
-    amount?: number; 
-    assets?: Asset[];
-    metadata?: Metadata;
-    metadataLabel?: string;
-}
-
+import { Send } from './Spend';
 /**
  * This allows sending a transaction to a single wallet.
- *
- * @param address - BECH32 address (addr...).
- * @param amount - Number. Amount to send in ADA.
- * @param assets - [{unit : "policyId.assetName", quantity : number}].
- * @param metadata - Object. Allows user to send optional metadata with the transaction.
- * @param metadataLabel - String. Defaults to '721'. Used to give the metadata a label.
- * ```
- *
  * @returns Promise string. Returns the transaction hash.
 */
 export const send = async({address, amount = 0, assets = [], metadata = null, metadataLabel = '721'} : Send) : 

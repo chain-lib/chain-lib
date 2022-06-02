@@ -1,17 +1,13 @@
 # Cardano API
 This is the Cardano API package inside the chain-lib monorepo. 
 
-You can find documentation [here](https://cardano-api.chain-lib.com/)
+You can find documentation [here](https://cardano-api.chain-lib.com/).
 
 ## Installation
-To install run:
-### yarn
 ```bash
-yarn install @chain-lib/cardano-api
-```
-### npm
-```bash
+yarn add @chain-lib/cardano-api
 npm install @chain-lib/cardano-api
+pnpm add @chain-lib/cardano-api
 ```
 ## Usage
 
@@ -77,8 +73,11 @@ CardanoAPI.baseCommands.getCollateral: () => Promise<TransactionUnspentOutput>;
 This will get the users smart contract collateral.
 ```javascript
 CardanoAPI.baseCommands.getUnusedAddresses: (type?: string | undefined) => Promise<Array<BaseAddress>>;
+
 CardanoAPI.baseCommands.getUsedAddresses: (type?: string | undefined) => Promise<Array<BaseAddress>>;
+
 CardanoAPI.baseCommands.getChangeAddress: (type?: string | undefined) => Promise<BaseAddress>;
+
 CardanoAPI.baseCommands.getRewardAddress: (type?: string | undefined) => Promise<RewardAddress>;
 ```
 By default BaseAddress and RewardAddress will return by default a hex encoded bytes string. You have the option to return a bech32 (human readable) address with the type field. The accepted types are 'hex' or 'bech32'. You can also get theses types by using CardanoAPI.AddressReturnType.hex or CardanoAPI.AddressReturnType.bech32.
@@ -113,7 +112,7 @@ CardanoAPI.baseCommands.submitTx: (tx: Transaction) => Promise<hash32>;
 Returns the transaction hash, if transaction was submitted successfully, otherwise throws an error.
 
 # Default OnchainData Plugin
-If you want to create your own package than find the abstract class [here](https://github.com/chain-lib/chain-lib/tree/main/packages/cardano-api/src/OnchainData/AbstractOnchainData.ts)
+If you want to create your own package than find the abstract class [here](https://github.com/chain-lib/chain-lib/tree/main/packages/cardano-api/src/OnchainData/AbstractOnchainData.ts).
 
 ## Blockfrost
 This plugin is for getting external data from the blockchain via blockfrost. It follows the abstractOnchainData class.
@@ -137,7 +136,7 @@ await API.register({
 
 In order to use these commands you need a way to get onchainData following the previous section.
 
-### 
+### send
 ```javascript
 CardanoAPI.spend.send: ({ address, amount, assets, metadata, metadataLabel }) => Promise<string>;
 ```
@@ -163,6 +162,7 @@ await CardanoAPI.spend.send({
     }
 })
 ```
+### sendMultiple
 ```javascript
 CardanoAPI.spend.sendMultiple: ({ recipients, metadata, metadataLabel }: SendMultiple) => Promise<string>;
 ```
@@ -191,6 +191,7 @@ await CardanoAPI.spend.sendMultiple({
     ],
 })
 ```
+### delegate
 ```javascript
 CardanoAPI.spend.delegate: ({ stakepoolId, metadata, metadataLabel }: Delegate) => Promise<string>;
 ```

@@ -1,35 +1,9 @@
 import { CardanoAPI } from '../CardanoAPI';
 import {getProtocolParameter, _makeMultiAsset, _txBuilder, _signSubmitTx} from './Helper';
-
-type Metadata = object | null;
-
-type Asset = {
-    unit: string;
-    quantity: string;
-}
-
-type SendMultiple = {
-    recipients: {
-        address: string; 
-        amount?: number; 
-        assets?: Asset[];
-    }[];
-    metadata?: Metadata;
-    metadataLabel?: string;
-}
+import { SendMultiple } from "./Spend";
 
 /**
  * This allows sending a transaction with multiple recipients.
- *
- * @param recipients - Array of recipient objects
- * ```json[{
- * address : BECH32 address (addr...),
- * amount : Number. Amount to send in ADA, 
- * assets : [{unit : "policyId.assetName", quantity : number}]}],
- * ```
- * @param metadata - Object. Allows user to send optional metadata with the transaction.
- * @param metadataLabel - String. Defaults to '721'. Used to give the metadata a label.
- * 
  * @returns Promise<string>. Returns the transaction hash.
 */
 export const sendMultiple = async ({recipients = [], metadata = null, metadataLabel = '721'}: SendMultiple) : 

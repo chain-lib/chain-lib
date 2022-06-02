@@ -37,6 +37,10 @@ typedoc(
             "./$(rootpath src/components/index.ts)",
             "./$(rootpath src/react/index.ts)",
             "./$(rootpath src/redux/index.ts)",
+            "--readme",
+            "./$(rootpath README.md)",
+            "--name",
+            "Cardano-Components"
            ],
     data = glob(["src/**/*.ts"]) + [
         "//:tsconfig.json",
@@ -55,7 +59,10 @@ http_server(
     data = [
         ":documentation"
     ],
-    args = ["."],
+    args = [
+        "./packages/cardano-components/documentation/",
+        "-c-1",
+    ],
     tags = ["documentation","local"]
 )
 

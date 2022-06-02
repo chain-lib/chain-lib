@@ -4,17 +4,13 @@ This is a repository full of reusable web components for working with the cardan
 
 What is a web-components? It is a way to write code that can be used with any framework, that means you can use it with React, Angular, Vue, base html and any other framework you might use.
 
-You can find a documentation website [here](https://cardano-components.chain-lib.com/)
+You can find a documentation website [here](https://cardano-components.chain-lib.com/).
 
 # Install and setup
-To install run:
-### yarn
 ```bash
-yarn install @chain-lib/cardano-components
-```
-### npm
-```bash
+yarn add @chain-lib/cardano-components
 npm install @chain-lib/cardano-compoents
+pnpm add @chain-lib/cardano-components
 ```
 This module requires that asyncWebAssembly be enabled (because of @emurgo/cardano-serializaiton-library), and webcomponents require you compile your module with at least es2019. I reccomend using esnext.
 

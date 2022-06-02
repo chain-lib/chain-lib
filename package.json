@@ -100,7 +100,9 @@
     "serve": "ibazel run //packages/cardano-components:serve_storybook",
     "docs:deploy-cardano-components": "bazel build //packages/cardano-components:deploy_documentation --sandbox_debug",
     "docs:deploy-cardano-api": "bazel build //packages/cardano-api:deploy_documentation --sandbox_debug",
-    "docs:deploy": "yarn docs:deploy-cardano-api && yarn docs:deploy-cardano-components"
+    "docs:deploy": "yarn docs:deploy-cardano-api && yarn docs:deploy-cardano-components",
+    "docs:view-cardano-api": "ibazel run //packages/cardano-api:serve_documentation",
+    "docs:view-cardano-components": "ibazel run //packages/cardano-components:serve_documentation"
   },
   "config": {
     "commitizen": {
