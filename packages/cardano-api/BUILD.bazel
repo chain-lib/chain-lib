@@ -32,11 +32,15 @@ typedoc(
             "--emit",
             "both",
             "./$(rootpath src/CardanoAPI.ts)",
-            "./$(rootpath src/Spend/Send.ts)",
+            "./$(rootpath src/Spend/Spend.ts)",
             "./$(rootpath src/Commands.ts)",
             "./$(rootpath src/DetectCardanoLoad.ts)",
             "./$(rootpath src/OnchainData/AbstractOnchainData.ts)",
             "./$(rootpath src/OnchainData/Blockfrost.ts)",
+            "--readme",
+            "./$(rootpath README.md)",
+            "--name",
+            "Cardano-API"
            ],
     data = glob(["src/**/*.ts"]) + [
         "//:tsconfig.json",
@@ -54,7 +58,10 @@ http_server(
     data = [
         ":documentation"
     ],
-    args = ["."],
+    args = [
+        "./packages/cardano-api/documentation/",
+        "-c-1",
+    ],
     tags = ["documentation","local"]
 )
 

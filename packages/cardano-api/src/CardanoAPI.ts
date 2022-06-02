@@ -5,10 +5,17 @@ import { detectCardanoLoad } from './DetectCardanoLoad';
 import { Spend } from './Spend/Spend';
 
 import { abstractOnchainData } from './OnchainData/AbstractOnchainData';
+/**
+ * Configuration Object used in CardanoAPI.register(Configure)
+*/
 export type Configure = {
   onchainData?: abstractOnchainData,
   cardanoSerializationLibrary: typeof CardanoSerializationLibrary;
 };
+
+/**
+ * The type for a cip30 wallet. Returned by CardanoAPI.getWalletInfo()
+ */
 export type WalletInfo = {
   apiVersion: String,
   enable: typeof Function,
@@ -27,26 +34,6 @@ window.cardano = window.cardano || {};
 
 /**
  * Cardano-api is an easy way to work with the cardano blockchain in the front end. It allows you to use cip-30 compatible wallets (nami, ccvault, etc) in your front end, and make easy functions for you to use.
- * ## Installation
- * To install run:
- * ### yarn
- * ```bash
- * yarn install @chain-lib/cardano-api
- * ```
- * ### npm
- * ```bash
- * npm install @chain-lib/cardano-api
- * ```
- * ## Usage
- * ```javascript
- * import { CardanoAPI, Blockfrost } from @chain-lib/cardano-api
- * const emurgoSerializationLib = await import('@emurgo/cardano-serialization-lib-browser/cardano_serialization_lib.js');
- * const API = CardanoAPI;
- * await API.register({
- * cardanoSerializationLibrary : emurgoSerializationLib,
- * onchainData : Blockfrost({mainnet : "mainnet-key"})
- * }),
- * ```
  * 
 */
 export const CardanoAPI = {
